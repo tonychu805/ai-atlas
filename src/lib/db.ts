@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Product, Supplier } from './data'
+import type { Product, ProductSummary, Supplier } from './data'
 
 // DB columns differ from the app's field names in a few places; alias them in
 // the select so rows come back already shaped as Product / Supplier and the
@@ -12,6 +12,9 @@ const PRODUCT_SELECT = [
 ].join(',')
 
 const SUPPLIER_SELECT = 'id,name,hq,models,stages'
+
+// Subset of PRODUCT_SELECT for the roadmap view + detail-page generation strip.
+const PRODUCT_SUMMARY_SELECT = 'id,name,vendor,sub,subcat:subcategory,family,status,node:process_node,rels'
 
 export async function getProducts(): Promise<Product[]> {
   const { data, error } = await supabase.from('products').select(PRODUCT_SELECT)
@@ -32,6 +35,12 @@ export async function getProductNames(): Promise<Record<string, string>> {
   const { data, error } = await supabase.from('products').select('id,name')
   if (error) throw new Error(`getProductNames: ${error.message}`)
   return Object.fromEntries(((data ?? []) as { id: string; name: string }[]).map(p => [p.id, p.name]))
+}
+
+export async function getProductSummaries(): Promise<ProductSummary[]> {
+  const { data, error } = await supabase.from('products').select(PRODUCT_SUMMARY_SELECT)
+  if (error) throw new Error(`getProductSummaries: ${error.message}`)
+  return (data ?? []) as unknown as ProductSummary[]
 }
 
 export async function getSuppliers(): Promise<Record<string, Supplier>> {
