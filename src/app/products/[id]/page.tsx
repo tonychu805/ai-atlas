@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { getProduct, getProductNames, getSuppliers } from '@/lib/db'
+import { getProduct, getProductNames, getProductSummaries, getSuppliers } from '@/lib/db'
 import ProductDetail from './ProductDetail'
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [product, productNames, suppliers] = await Promise.all([
-    getProduct(id), getProductNames(), getSuppliers(),
+  const [product, productNames, suppliers, summaries] = await Promise.all([
+    getProduct(id), getProductNames(), getSuppliers(), getProductSummaries(),
   ])
 
   if (!product) return (
@@ -15,5 +15,5 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     </div>
   )
 
-  return <ProductDetail product={product} productNames={productNames} suppliers={suppliers} />
+  return <ProductDetail product={product} productNames={productNames} suppliers={suppliers} summaries={summaries} />
 }

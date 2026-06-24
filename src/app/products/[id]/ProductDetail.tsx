@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { PRODUCT_BRIEF, SOURCES, STAGES, STATUS_STYLE, CONF_STYLE, FACET_DEFS, DOMAINS, LIFECYCLE, fmtUSD, type Product, type Supplier } from '@/lib/data'
+import { PRODUCT_BRIEF, SOURCES, STAGES, STATUS_STYLE, CONF_STYLE, FACET_DEFS, DOMAINS, LIFECYCLE, fmtUSD, type Product, type ProductSummary, type Supplier } from '@/lib/data'
 import { Linkify } from '@/lib/linkify'
+import GenerationStrip from './GenerationStrip'
+import CompositionSection from './CompositionSection'
 
 type Level = 'L1' | 'L2' | 'L3'
 
@@ -19,10 +21,11 @@ function ConfBadge({ conf }: { conf?: string }) {
   return <span className="text-xs font-medium" style={{ color: c.c }} title={`Confidence: ${c.l}`}>{c.l}</span>
 }
 
-export default function ProductDetail({ product, productNames, suppliers }: {
+export default function ProductDetail({ product, productNames, suppliers, summaries }: {
   product: Product
   productNames: Record<string, string>
   suppliers: Record<string, Supplier>
+  summaries: ProductSummary[]
 }) {
   const [level, setLevel] = useState<Level>('L1')
 
@@ -30,10 +33,16 @@ export default function ProductDetail({ product, productNames, suppliers }: {
   const domain = DOMAINS[product.domain as keyof typeof DOMAINS]
   const rels = product.rels ?? []
 
-  // Build connects-to list
-  const connects = rels.map(r => ({
-    type: r.type, name: productNames[r.target] ?? r.target, id: r.target, qty: r.qty,
-  }))
+  // "Related" = everything except composition (uses) and succession (shown in
+  // the generation strip), so the same fact never appears twice.
+  const related = rels
+    .filter(r => r.type !== 'uses' && r.type !== 'succeeds')
+    .map(r => ({ type: r.type, name: productNames[r.target] ?? r.target, id: r.target, qty: r.qty }))
+
+  // Data tier, inferred — no DB field.
+  const hasSpecs = product.specs.length > 0
+  const hasSupply = Object.values(product.supply).some(a => a && a.length > 0)
+  const tier = hasSpecs && product.bom && brief ? 'full' : (hasSpecs || hasSupply ? 'standard' : 'stub')
 
   return (
     <div style={{ background: 'var(--background)' }} className="min-h-screen">
@@ -53,6 +62,12 @@ export default function ProductDetail({ product, productNames, suppliers }: {
             <div className="flex items-center gap-2 mb-1">
               <StatusBadge status={product.status} />
               {product.node && <span className="text-xs px-2 py-1 rounded font-mono" style={{ background: '#f3f2ee', color: '#6b6557' }}>{product.node}</span>}
+              <span className="text-xs px-2 py-1 rounded font-medium"
+                style={tier === 'full'
+                  ? { background: '#dcfce7', color: '#166534' }
+                  : { background: '#f1f0ec', color: '#6b7280' }}>
+                {tier === 'full' ? 'Full data' : 'Partial data'}
+              </span>
             </div>
             <h1 className="text-3xl font-bold mt-2" style={{ color: '#0f172a' }}>{product.name}</h1>
             <p className="text-base mt-1" style={{ color: '#8a8579' }}>{product.vendor} · {product.family ?? product.subcat}</p>
@@ -70,6 +85,9 @@ export default function ProductDetail({ product, productNames, suppliers }: {
             </div>
           )}
         </div>
+
+        {/* Generation strip */}
+        <GenerationStrip product={product} summaries={summaries} />
 
         {/* In plain terms */}
         {brief && (
@@ -127,9 +145,9 @@ export default function ProductDetail({ product, productNames, suppliers }: {
 
         <div className="grid sm:grid-cols-2 gap-6 mb-8">
           {/* Specs */}
-          {product.specs.length > 0 && (
-            <section className="rounded-xl border p-5" style={{ borderColor: 'var(--border)', background: '#fff' }}>
-              <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: '#a8a294' }}>Specs</h2>
+          <section className="rounded-xl border p-5" style={{ borderColor: 'var(--border)', background: '#fff' }}>
+            <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: '#a8a294' }}>Specs</h2>
+            {product.specs.length > 0 ? (
               <table className="w-full text-sm">
                 <tbody>
                   {product.specs.map(s => (
@@ -141,8 +159,10 @@ export default function ProductDetail({ product, productNames, suppliers }: {
                   ))}
                 </tbody>
               </table>
-            </section>
-          )}
+            ) : (
+              <p className="text-sm" style={{ color: '#a8a294' }}>No specifications recorded yet.</p>
+            )}
+          </section>
 
           {/* BOM */}
           {product.bom && (
@@ -202,12 +222,15 @@ export default function ProductDetail({ product, productNames, suppliers }: {
           </div>
         </section>
 
-        {/* Connects to */}
-        {connects.length > 0 && (
+        {/* Composition */}
+        <CompositionSection product={product} productNames={productNames} />
+
+        {/* Related */}
+        {related.length > 0 && (
           <section className="rounded-xl border p-5 mb-8" style={{ borderColor: 'var(--border)', background: '#fff' }}>
-            <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: '#a8a294' }}>Connects to</h2>
+            <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: '#a8a294' }}>Related</h2>
             <div className="flex flex-col gap-2">
-              {connects.map(c => (
+              {related.map(c => (
                 <div key={c.id} className="flex items-center gap-3 text-sm">
                   <span className="text-xs px-2 py-0.5 rounded font-medium" style={{ background: '#f3f2ee', color: '#6b6557' }}>
                     {c.type.replace(/_/g, ' ')}

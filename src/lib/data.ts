@@ -332,6 +332,20 @@ export interface Product {
   sources: string[]
 }
 
+// Lightweight shape for the roadmap view and the detail-page generation strip.
+// A subset of Product columns — no specs / bom / supply / sources.
+export interface ProductSummary {
+  id: string
+  name: string
+  vendor: string
+  sub: string
+  subcat: string
+  family?: string
+  status: string
+  node?: string
+  rels: { type: string; target: string; qty?: number }[]
+}
+
 export interface Supplier {
   id: string
   name: string
