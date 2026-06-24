@@ -75,9 +75,10 @@ export default function RoadmapView({ products }: { products: ProductSummary[] }
           // Otherwise group by sub.
           const bySub = new Map<string, ProductSummary[]>()
           for (const p of list) {
-            const sub = bySub.get(p.sub)
+            const key = p.sub || 'Other' // sub can be null/empty in the data
+            const sub = bySub.get(key)
             if (sub) sub.push(p)
-            else bySub.set(p.sub, [p])
+            else bySub.set(key, [p])
           }
           const subs = [...bySub.keys()].sort((a, b) =>
             (SUB_LABEL[a] ?? a).localeCompare(SUB_LABEL[b] ?? b))
