@@ -12,10 +12,12 @@ const TABS: { key: string; label: string; filter: (p: Product) => boolean }[] = 
 ]
 
 const FILTER_GROUPS: { label: string; facets: string[] }[] = [
-  { label: 'Business',      facets: ['status', 'company_type'] },
+  { label: 'Business',      facets: ['status', 'company_type', 'vendor'] },
   { label: 'Functional',    facets: ['integration_level', 'end_market'] },
   { label: 'Manufacturing', facets: ['node_maturity', 'transistor_arch', 'packaging', 'material_system'] },
 ]
+
+type FacetDef = { key: string; label: string; map: Record<string, string>; get: (p: Product) => string | undefined }
 
 export default function ProductsTable({ products }: { products: Product[] }) {
   const [tab, setTab]         = useState('all')
@@ -23,6 +25,18 @@ export default function ProductsTable({ products }: { products: Product[] }) {
   const [filters, setFilters] = useState<Record<string, string>>({})
 
   const tabDef = TABS.find(t => t.key === tab) ?? TABS[0]
+
+  // Company filter is data-driven: options are the distinct vendors present.
+  const allDefs = useMemo<FacetDef[]>(() => {
+    const vendors = Array.from(new Set(products.map(p => p.vendor))).sort((a, b) => a.localeCompare(b))
+    const vendorDef: FacetDef = {
+      key: 'vendor',
+      label: 'Company',
+      map: Object.fromEntries(vendors.map(v => [v, v])),
+      get: p => p.vendor,
+    }
+    return [...FACET_DEFS, vendorDef]
+  }, [products])
 
   const filtered = useMemo(() => {
     let list = products.filter(tabDef.filter)
@@ -36,12 +50,12 @@ export default function ProductsTable({ products }: { products: Product[] }) {
     }
     for (const [facetKey, val] of Object.entries(filters)) {
       if (!val) continue
-      const def = FACET_DEFS.find(f => f.key === facetKey)
+      const def = allDefs.find(f => f.key === facetKey)
       if (!def) continue
       list = list.filter(p => def.get(p) === val)
     }
     return list
-  }, [products, search, filters, tabDef])
+  }, [products, search, filters, tabDef, allDefs])
 
   function setFilter(key: string, val: string) {
     setFilters(prev => ({ ...prev, [key]: prev[key] === val ? '' : val }))
@@ -103,7 +117,9 @@ export default function ProductsTable({ products }: { products: Product[] }) {
         {/* Grouped filters */}
         <div className="flex flex-col gap-3 mb-6">
           {FILTER_GROUPS.map(group => {
-            const defs = FACET_DEFS.filter(f => group.facets.includes(f.key))
+            const defs = group.facets
+              .map(key => allDefs.find(f => f.key === key))
+              .filter((f): f is FacetDef => Boolean(f))
             return (
               <div key={group.label} className="flex items-start gap-4">
                 <span
