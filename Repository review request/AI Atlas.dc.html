@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;}
+    html,body{margin:0;padding:0;}
+    ::selection{background:#0f172a;color:#fff;}
+    .ax-scroll::-webkit-scrollbar{height:10px;width:10px;}
+    .ax-scroll::-webkit-scrollbar-track{background:transparent;}
+    .ax-scroll::-webkit-scrollbar-thumb{background:#d8d3c9;border-radius:8px;border:2px solid #f8f7f4;}
+    select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%238a8579' stroke-width='1.5'/></svg>");background-repeat:no-repeat;background-position:right 11px center;padding-right:28px !important;}
+  </style>
+</helmet>
+<div style="min-height:100vh;background:#f8f7f4;color:#1c1a17;font-family:'Geist',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-feature-settings:'cv01','ss01';">
+
+  <header style="position:sticky;top:0;z-index:50;border-bottom:1px solid #e5e2db;background:rgba(248,247,244,0.88);backdrop-filter:blur(8px);">
+    <div style="max-width:1200px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;">
+      <div onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+        <div style="width:22px;height:22px;border-radius:5px;background:#0f172a;display:flex;align-items:center;justify-content:center;">
+          <div style="width:9px;height:9px;border:1.5px solid #f8f7f4;border-radius:2px;"></div>
+        </div>
+        <span style="font-weight:600;font-size:16px;letter-spacing:-0.01em;color:#0f172a;">AI Atlas</span>
+        <span style="font-size:10px;font-weight:600;letter-spacing:0.04em;padding:2px 6px;border-radius:4px;background:#eceef5;color:#475569;text-transform:uppercase;">Beta</span>
+      </div>
+      <nav style="display:flex;align-items:center;gap:20px;">
+        <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="6">
+          <span onClick="{{ item.onClick }}" style="font-size:14px;font-weight:500;cursor:pointer;color: {{ item.color }};padding-bottom:2px;border-bottom:1.5px solid {{ item.underline }};white-space:nowrap;">{{ item.label }}</span>
+        </sc-for>
+      </nav>
+    </div>
+  </header>
+
+  <main style="max-width:1200px;margin:0 auto;padding:0 24px;">
+
+    <!-- ============ HOME ============ -->
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <section style="padding:80px 0;min-height:62vh;">
+        <h1 style="font-size:46px;line-height:1.04;font-weight:600;letter-spacing:-0.025em;color:#0f172a;margin:0;max-width:760px;text-wrap:balance;">The semiconductor industry, mapped.</h1>
+        <p style="font-size:18px;line-height:1.55;color:#57534e;margin:20px 0 0;max-width:560px;">An open, structured database of chips, BOMs, supply chains, and supplier graphs — starting with AI accelerators and memory.</p>
+        <div style="display:flex;gap:12px;margin-top:36px;flex-wrap:wrap;">
+          <span onClick="{{ goValueChain }}" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:11px 20px;border-radius:9px;background:#0f172a;color:#fff;cursor:pointer;" style-hover="background:#1e293b;">See how it's made →</span>
+          <span onClick="{{ goProducts }}" style="display:inline-flex;align-items:center;font-size:14px;font-weight:500;padding:11px 20px;border-radius:9px;border:1px solid #e5e2db;background:#fff;color:#1c1a17;cursor:pointer;" style-hover="background:#f6f4ef;">Browse products</span>
+        </div>
+        <div onClick="{{ goValueChain }}" style="display:inline-flex;align-items:center;gap:7px;margin-top:22px;font-size:14px;font-weight:500;color:#9a6b3f;cursor:pointer;">New here? See how a chip is made, stage by stage →</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:30px;flex-wrap:wrap;">
+          <span style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#a8a294;">Trending 2026</span>
+          <sc-for list="{{ trending }}" as="t" hint-placeholder-count="3">
+            <span onClick="{{ t.onClick }}" style="font-size:12.5px;font-weight:500;padding:5px 12px;border-radius:999px;border:1px solid #e2ded6;background:#fff;color:#3f3b34;cursor:pointer;" style-hover="border:1px solid #0f172a;color:#0f172a;">{{ t.label }}</span>
+          </sc-for>
+        </div>
+      </section>
+
+      <section style="padding:8px 0 80px;">
+        <div style="border-top:1px solid #e5e2db;padding-top:30px;margin-bottom:26px;">
+          <h2 style="font-size:13px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#0f172a;margin:0;">Explore by layer</h2>
+          <p style="font-size:13.5px;color:#8a8579;margin:6px 0 0;max-width:560px;">From the factory floor up to the finished application — four layers of the semiconductor stack.</p>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <sc-for list="{{ homeLayers }}" as="L" hint-placeholder-count="4">
+            <div style="display:flex;gap:20px;align-items:stretch;flex-wrap:wrap;">
+              <div style="width:172px;flex:none;display:flex;flex-direction:column;justify-content:center;border-left:3px solid {{ L.color }};padding:6px 0 6px 16px;">
+                <div style="font-family:'Geist Mono',monospace;font-size:12px;color: {{ L.color }};">{{ L.n }}</div>
+                <div style="font-size:18px;font-weight:600;color:#0f172a;letter-spacing:-0.01em;margin-top:2px;">{{ L.label }}</div>
+                <div style="font-size:12px;color:#a8a294;margin-top:2px;">{{ L.tag }}</div>
+              </div>
+              <div style="flex:1;min-width:280px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;">
+                <sc-for list="{{ L.cards }}" as="c" hint-placeholder-count="3">
+                  <div onClick="{{ c.onClick }}" style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:16px 17px;cursor:pointer;display:flex;flex-direction:column;" style-hover="border:1px solid #0f172a;">
+                    <div style="font-size:14.5px;font-weight:600;color:#0f172a;">{{ c.title }}</div>
+                    <p style="font-size:12.5px;line-height:1.5;color:#8a8579;margin:7px 0 0;flex:1;">{{ c.desc }}</p>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;">
+                      <span style="font-size:11px;font-family:'Geist Mono',monospace;color:#a8a294;">{{ c.meta }}</span>
+                      <span style="color:#cfc9bd;font-size:13px;">→</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </div>
+    </sc-if>
+
+    <!-- ============ MAP ============ -->
+    <sc-if value="{{ isMap }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:40px 0 72px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <h1 style="font-size:30px;font-weight:600;letter-spacing:-0.02em;color:#0f172a;margin:0 0 6px;">The industry map</h1>
+          <p style="font-size:14.5px;color:#8a8579;margin:0;max-width:620px;">Every branch of the device taxonomy. Logic and Memory are populated now; the rest are scaffolded for later. Click a populated slice to browse its products.</p>
+        </div>
+        <span onClick="{{ goValueChain }}" style="font-size:13px;font-weight:500;color:#9a6b3f;cursor:pointer;white-space:nowrap;">How it's made →</span>
+      </div>
+
+      <div style="display:flex;gap:36px;flex-wrap:wrap;align-items:flex-start;margin-top:26px;">
+        <div style="flex:1 1 440px;min-width:360px;display:flex;justify-content:center;">
+          <svg viewBox="0 0 440 440" style="width:100%;max-width:480px;overflow:visible;font-family:'Geist',sans-serif;">
+            <sc-for list="{{ sun.subArcs }}" as="a" hint-placeholder-count="39">
+              <path d="{{ a.d }}" fill="{{ a.fill }}" fillOpacity="{{ a.op }}" stroke="#f8f7f4" strokeWidth="1" onClick="{{ a.onClick }}" style="cursor: {{ a.cursor }};"></path>
+            </sc-for>
+            <sc-for list="{{ sun.domainArcs }}" as="a" hint-placeholder-count="8">
+              <path d="{{ a.d }}" fill="{{ a.fill }}" stroke="#f8f7f4" strokeWidth="1.5" onClick="{{ a.onClick }}" style="cursor:pointer;"></path>
+            </sc-for>
+            <circle cx="220" cy="220" r="54" fill="#0f172a"></circle>
+            <text x="220" y="216" textAnchor="middle" fill="#f8f7f4" style="font-size:13px;font-weight:600;">AI Atlas</text>
+            <text x="220" y="231" textAnchor="middle" fill="#9aa3b2" style="font-size:8.5px;letter-spacing:0.08em;">DEVICE MAP</text>
+            <sc-for list="{{ sun.labels }}" as="l" hint-placeholder-count="8">
+              <text x="{{ l.x }}" y="{{ l.y }}" textAnchor="{{ l.anchor }}" fill="{{ l.fill }}" onClick="{{ l.onClick }}" style="font-size:11px;font-weight:600;cursor:pointer;">{{ l.text }}</text>
+            </sc-for>
+          </svg>
+        </div>
+
+        <div style="flex:1 1 300px;min-width:290px;">
+          <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <span style="width:12px;height:12px;border-radius:50%;flex:none;background: {{ mp.color }};"></span>
+              <h2 style="font-size:19px;font-weight:600;color:#0f172a;margin:0;">{{ mp.label }}</h2>
+              <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;background: {{ mp.phaseBg }};color: {{ mp.phaseFg }};text-transform:uppercase;letter-spacing:0.05em;">{{ mp.phaseLabel }}</span>
+            </div>
+            <p style="font-size:13px;color:#8a8579;margin:11px 0 16px;line-height:1.5;">{{ mp.summary }}</p>
+            <div style="display:flex;flex-direction:column;">
+              <sc-for list="{{ mp.subs }}" as="s" hint-placeholder-count="6">
+                <div onClick="{{ s.onClick }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid #efede7;cursor: {{ s.cursor }};" style-hover="background:#f8f7f4;">
+                  <span style="font-size:13.5px;color: {{ s.color }};">{{ s.label }}</span>
+                  <span style="font-size:11.5px;font-family:'Geist Mono',monospace;color: {{ s.countColor }};white-space:nowrap;">{{ s.countLabel }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;gap:18px;margin-top:16px;padding-left:2px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:#57534e;"><span style="width:10px;height:10px;border-radius:3px;background:#9a6b3f;"></span>Populated now</div>
+            <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:#57534e;"><span style="width:10px;height:10px;border-radius:3px;background:#dcd6cb;"></span>Scaffolded (later)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ PRODUCTS ============ -->
+    <sc-if value="{{ isProducts }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:44px 0 80px;">
+      <h1 style="font-size:30px;font-weight:600;letter-spacing:-0.02em;color:#0f172a;margin:0 0 4px;">Products</h1>
+      <p style="font-size:14px;color:#8a8579;margin:0 0 24px;">{{ productCountLabel }}</p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;align-items:stretch;">
+        <sc-for list="{{ archBuckets }}" as="a" hint-placeholder-count="5">
+          <span onClick="{{ a.onClick }}" style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;padding:9px 15px;border-radius:10px;cursor:pointer;border:1px solid {{ a.border }};background: {{ a.bg }};color: {{ a.fg }};">{{ a.label }}<span style="font-size:11px;font-weight:500;font-family:'Geist Mono',monospace;color: {{ a.countColor }};">{{ a.count }}</span></span>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+        <input value="{{ productQuery }}" onInput="{{ onQuery }}" placeholder="Search chips, vendors…" style="font-family:inherit;font-size:14px;padding:8px 13px;border-radius:9px;border:1px solid #e5e2db;background:#fff;outline:none;width:200px;color:#1c1a17;" />
+        <sc-for list="{{ facetGroups }}" as="g" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <span style="width:104px;flex:none;font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#b3ada0;">{{ g.label }}</span>
+            <sc-for list="{{ g.selects }}" as="f" hint-placeholder-count="2">
+              <select value="{{ f.value }}" onChange="{{ f.onChange }}" style="font-family:inherit;font-size:13px;padding:8px 12px;border-radius:9px;border:1px solid {{ f.border }};background: {{ f.bg }};color: {{ f.fg }};cursor:pointer;outline:none;">
+                <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="4">
+                  <option value="{{ o.value }}">{{ o.label }}</option>
+                </sc-for>
+              </select>
+            </sc-for>
+          </div>
+        </sc-for>
+        <sc-if value="{{ hasActiveFilters }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="width:104px;flex:none;"></span>
+            <span onClick="{{ clearFilters }}" style="font-size:12.5px;color:#9a6b3f;cursor:pointer;font-weight:500;">Clear all</span>
+          </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ hasSub }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-bottom:14px;">
+          <span onClick="{{ clearSub }}" style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:500;padding:5px 12px;border-radius:999px;background:#0f172a;color:#fff;cursor:pointer;">{{ subChipLabel }} <span style="opacity:0.7;">✕</span></span>
+        </div>
+      </sc-if>
+
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:13px;flex-wrap:wrap;">
+        <span style="font-size:12px;color:#a8a294;font-family:'Geist Mono',monospace;">value-chain columns →  click a supplier to follow the chain</span>
+      </div>
+
+      <div class="ax-scroll" style="overflow-x:auto;border:1px solid #e5e2db;border-radius:12px;background:#fff;">
+        <table style="border-collapse:separate;border-spacing:0;min-width:1360px;width:100%;font-size:13px;">
+          <thead>
+            <tr>
+              <th style="position:sticky;left:0;z-index:2;background:#f3f2ee;text-align:left;padding:12px 18px;font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#8a8579;border-bottom:1px solid #e5e2db;border-right:1px solid #e5e2db;min-width:212px;">Product</th>
+              <th style="text-align:left;padding:12px 14px;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#8a8579;border-bottom:1px solid #e5e2db;white-space:nowrap;">Category</th>
+              <th style="text-align:left;padding:12px 14px;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#8a8579;border-bottom:1px solid #e5e2db;white-space:nowrap;">Status</th>
+              <sc-for list="{{ stageColumns }}" as="col" hint-placeholder-count="7">
+                <th style="text-align:left;padding:12px 14px;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:#a8a294;border-bottom:1px solid #e5e2db;border-left:1px solid #f1efe9;white-space:nowrap;vertical-align:bottom;">{{ col.label }}</th>
+              </sc-for>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ combinedRows }}" as="row" hint-placeholder-count="8">
+              <tr style-hover="background:#fbfaf8;">
+                <td onClick="{{ row.onClick }}" style="position:sticky;left:0;z-index:1;background:#fff;padding:13px 18px;border-bottom:1px solid #efede7;border-right:1px solid #e5e2db;cursor:pointer;vertical-align:top;">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span style="width:8px;height:8px;border-radius:50%;flex:none;background: {{ row.domainColor }};"></span>
+                    <span style="font-weight:600;color:#0f172a;white-space:nowrap;">{{ row.name }}</span>
+                  </div>
+                  <div style="font-size:11px;color:#a8a294;margin-top:3px;padding-left:16px;">{{ row.meta }}</div>
+                </td>
+                <td style="padding:13px 14px;color:#8a8579;border-bottom:1px solid #efede7;vertical-align:top;white-space:nowrap;">{{ row.subcatLabel }}</td>
+                <td style="padding:13px 14px;border-bottom:1px solid #efede7;vertical-align:top;">
+                  <span style="font-size:11px;font-weight:500;padding:3px 9px;border-radius:999px;background: {{ row.statusBg }};color: {{ row.statusFg }};text-transform:capitalize;white-space:nowrap;">{{ row.status }}</span>
+                </td>
+                <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="7">
+                  <td style="padding:11px 12px;border-bottom:1px solid #efede7;border-left:1px solid #f4f2ec;vertical-align:top;">
+                    <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                      <sc-for list="{{ cell.suppliers }}" as="sup" hint-placeholder-count="1">
+                        <span onClick="{{ sup.onClick }}" style="display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid #e2ded6;background:#fbfaf8;color:#3f3b34;cursor:pointer;white-space:nowrap;" style-hover="border:1px solid #0f172a;color:#0f172a;background:#fff;">{{ sup.name }}</span>
+                      </sc-for>
+                    </div>
+                    <sc-if value="{{ cell.empty }}" hint-placeholder-val="{{ false }}">
+                      <span style="color:#d2cdc2;font-size:13px;">·</span>
+                    </sc-if>
+                  </td>
+                </sc-for>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <sc-if value="{{ productsEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:48px;text-align:center;color:#a8a294;font-size:14px;border:1px solid #e5e2db;border-top:none;border-radius:0 0 12px 12px;background:#fff;">No products match your filters.</div>
+      </sc-if>
+    </div>
+    </sc-if>
+
+    <!-- ============ PRODUCT DETAIL ============ -->
+    <sc-if value="{{ isProduct }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:32px 0 80px;max-width:860px;">
+      <div style="font-size:12.5px;color:#a8a294;margin-bottom:20px;">
+        <span onClick="{{ goProducts }}" style="cursor:pointer;color:#8a8579;">Products</span>
+        <span style="margin:0 7px;">›</span>
+        <span>{{ cp.name }}</span>
+      </div>
+
+      <div style="margin-bottom:26px;">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <h1 style="font-size:32px;font-weight:600;letter-spacing:-0.02em;color:#0f172a;margin:0;">{{ cp.name }}</h1>
+          <span style="font-size:12px;font-weight:500;padding:4px 11px;border-radius:999px;background: {{ cp.statusBg }};color: {{ cp.statusFg }};text-transform:capitalize;">{{ cp.status }}</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:18px;margin-top:12px;font-size:13.5px;color:#8a8579;">
+          <span style="color:#3f3b34;font-weight:500;">{{ cp.vendor }}</span>
+          <span>{{ cp.family }}</span>
+          <span>{{ cp.subcatLabel }}</span>
+          <span style="font-family:'Geist Mono',monospace;font-size:12.5px;">{{ cp.node }}</span>
+          <span>{{ cp.availLabel }}</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:18px;">
+
+        <sc-if value="{{ cp.hasBrief }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 12px;">In plain terms</h2>
+          <p style="font-size:16px;line-height:1.6;color:#1c1a17;margin:0;"><span>{{ cp.briefNode }}</span></p>
+          <sc-if value="{{ cp.hasAnalogy }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:13.5px;font-style:italic;color:#8a7a5f;margin-top:12px;border-left:2px solid #e2c9a8;padding-left:12px;">{{ cp.analogy }}</div>
+          </sc-if>
+          <sc-if value="{{ cp.showL2 }}" hint-placeholder-val="{{ false }}">
+            <p style="font-size:14px;line-height:1.6;color:#3f3b34;margin:16px 0 0;"><span>{{ cp.l2Node }}</span></p>
+          </sc-if>
+          <sc-if value="{{ cp.showL3 }}" hint-placeholder-val="{{ false }}">
+            <p style="font-size:13.5px;line-height:1.6;color:#57534e;margin:12px 0 0;"><span>{{ cp.l3Node }}</span></p>
+          </sc-if>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ cp.hasWhy }}" hint-placeholder-val="{{ false }}">
+        <div style="border-left:3px solid #9a6b3f;background:#faf4ec;border-radius:0 10px 10px 0;padding:16px 20px;">
+          <div style="font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#9a6b3f;margin-bottom:6px;">Why it matters</div>
+          <p style="font-size:14px;line-height:1.55;color:#3f3b34;margin:0;"><span>{{ cp.whyNode }}</span></p>
+        </div>
+        </sc-if>
+
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:20px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 13px;">Attributes</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <sc-for list="{{ cp.attrItems }}" as="a" hint-placeholder-count="5">
+              <span style="display:inline-flex;align-items:center;gap:7px;font-size:12.5px;padding:5px 12px;border-radius:8px;background:#f3f2ee;color:#3f3b34;"><span style="color:#a8a294;">{{ a.label }}</span><span style="font-weight:500;">{{ a.value }}</span></span>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 16px;">Specifications</h2>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+            <sc-for list="{{ cp.specRows }}" as="sp" hint-placeholder-count="6">
+              <div style="background:#f6f4ef;border-radius:9px;padding:12px 13px;">
+                <div style="font-size:11.5px;color:#8a8579;margin-bottom:3px;">{{ sp.label }}</div>
+                <div style="font-size:14px;font-weight:500;color:#1c1a17;">{{ sp.value }}<span style="font-size:11px;font-weight:600;margin-left:6px;color: {{ sp.confColor }};">{{ sp.confLabel }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ cp.hasBom }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;">
+            <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0;">Bill of materials</h2>
+            <span style="font-size:11.5px;color:#a8a294;font-family:'Geist Mono',monospace;">{{ cp.uncertaintyLabel }}</span>
+          </div>
+          <p style="font-size:12px;color:#a8a294;margin:0 0 16px;">Per-unit manufacturing cost, excludes NRE.</p>
+          <table style="width:100%;border-collapse:collapse;font-size:13.5px;">
+            <tbody>
+              <sc-for list="{{ cp.bomItems }}" as="b" hint-placeholder-count="5">
+                <tr style="border-bottom:1px solid #efede7;">
+                  <td style="padding:11px 0;color:#1c1a17;">
+                    <span style="font-weight:500;">{{ b.label }}</span>
+                    <span style="font-size:11px;font-weight:600;margin-left:6px;color: {{ b.confColor }};">{{ b.confLabel }}</span>
+                    <sc-if value="{{ b.hasRef }}" hint-placeholder-val="{{ false }}">
+                      <span onClick="{{ b.refOnClick }}" style="display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:11px;padding:1px 8px;border-radius:999px;background:#eef4f4;color:#2c6360;cursor:pointer;font-family:'Geist Mono',monospace;">↗ {{ b.refName }}</span>
+                    </sc-if>
+                    <div style="font-size:11.5px;color:#a8a294;margin-top:2px;">{{ b.note }}</div>
+                  </td>
+                  <td style="padding:11px 0;text-align:right;font-family:'Geist Mono',monospace;color:#1c1a17;white-space:nowrap;">{{ b.costStr }}<span style="color:#a8a294;font-size:11px;margin-left:5px;">{{ b.qtyStr }}</span></td>
+                </tr>
+              </sc-for>
+              <tr style="border-top:1.5px solid #e5e2db;">
+                <td style="padding:13px 0;font-weight:600;color:#0f172a;">Total est.<span style="font-size:11px;font-weight:600;margin-left:6px;color: {{ cp.totalConfColor }};">{{ cp.totalConfLabel }}</span></td>
+                <td style="padding:13px 0;text-align:right;font-family:'Geist Mono',monospace;font-weight:600;color:#0f172a;">{{ cp.totalStr }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </sc-if>
+
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 16px;">Supply chain</h2>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <sc-for list="{{ cp.supplyRows }}" as="row" hint-placeholder-count="4">
+              <div style="display:flex;gap:18px;align-items:flex-start;">
+                <div style="width:140px;flex:none;font-size:12px;font-weight:500;color:#8a8579;padding-top:3px;">{{ row.label }}</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <sc-for list="{{ row.suppliers }}" as="sup" hint-placeholder-count="2">
+                    <span onClick="{{ sup.onClick }}" style="font-size:12.5px;padding:4px 11px;border-radius:999px;border:1px solid #e2ded6;background:#fbfaf8;color:#3f3b34;cursor:pointer;" style-hover="border:1px solid #0f172a;color:#0f172a;">{{ sup.name }}</span>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ cp.hasRelated }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 16px;">Related products</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <sc-for list="{{ cp.relatedItems }}" as="r" hint-placeholder-count="3">
+              <span onClick="{{ r.onClick }}" style="display:inline-flex;align-items:center;gap:9px;padding:8px 13px;border-radius:10px;border:1px solid #e5e2db;background:#fbfaf8;cursor:pointer;font-size:13.5px;" style-hover="border:1px solid #0f172a;">
+                <span style="font-size:10.5px;font-family:'Geist Mono',monospace;padding:2px 7px;border-radius:5px;background:#f1f0ec;color:#8a8579;text-transform:uppercase;letter-spacing:0.03em;">{{ r.typeLabel }}</span>
+                <span style="color:#0f172a;font-weight:500;">{{ r.name }}</span>
+              </span>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ cp.hasConnects }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 14px;">Connects to</h2>
+          <div style="display:flex;flex-direction:column;">
+            <sc-for list="{{ cp.connects }}" as="c" hint-placeholder-count="4">
+              <div onClick="{{ c.onClick }}" style="display:flex;align-items:center;gap:11px;padding:10px 2px;border-bottom:1px solid #efede7;cursor:pointer;" style-hover="background:#fbfaf8;">
+                <span style="font-size:11px;font-family:'Geist Mono',monospace;color:#a8a294;width:88px;flex:none;">{{ c.rel }}</span>
+                <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background: {{ c.kBg }};color: {{ c.kFg }};text-transform:uppercase;letter-spacing:0.03em;flex:none;">{{ c.kindLabel }}</span>
+                <span style="font-size:14px;font-weight:500;color:#0f172a;">{{ c.name }}</span>
+                <span style="margin-left:auto;color:#cfc9bd;font-size:13px;">→</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fbfaf8;padding:22px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 14px;">Provenance</h2>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <sc-for list="{{ cp.sourceItems }}" as="src" hint-placeholder-count="2">
+              <div style="display:flex;gap:12px;align-items:baseline;">
+                <span style="font-size:10.5px;font-family:'Geist Mono',monospace;color:#a8a294;flex:none;width:54px;">{{ src.id }}</span>
+                <div>
+                  <span style="font-size:13.5px;color:#1c1a17;">{{ src.title }}</span>
+                  <span style="font-size:12px;color:#8a8579;"> — {{ src.meta }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <p style="font-size:11.5px;color:#a8a294;margin:16px 0 0;font-family:'Geist Mono',monospace;">Last verified {{ cp.verified }}</p>
+        </div>
+
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ VALUE CHAIN ============ -->
+    <sc-if value="{{ isValueChain }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:40px 0 80px;">
+      <h1 style="font-size:30px;font-weight:600;letter-spacing:-0.02em;color:#0f172a;margin:0 0 6px;">The value chain</h1>
+      <p style="font-size:14.5px;color:#8a8579;margin:0;max-width:640px;">Seven stages from design to distribution. Expand any stage to see its process sub-modules and the equipment and materials suppliers that serve it.</p>
+
+      <div style="display:flex;align-items:center;gap:6px;margin-top:22px;flex-wrap:wrap;">
+        <sc-for list="{{ vcStrip }}" as="s" hint-placeholder-count="7">
+          <span onClick="{{ s.onClick }}" style="font-size:11.5px;font-weight:500;padding:6px 11px;border-radius:8px;cursor:pointer;background: {{ s.bg }};color: {{ s.fg }};border:1px solid {{ s.border }};white-space:nowrap;">{{ s.label }}</span>
+          <span style="color:#cfc9bd;font-size:12px;">{{ s.arrow }}</span>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:22px;">
+        <sc-for list="{{ vcRows }}" as="v" hint-placeholder-count="7">
+          <div style="border:1px solid {{ v.border }};border-radius:12px;background:#fff;overflow:hidden;">
+            <div onClick="{{ v.onToggle }}" style="display:flex;align-items:center;gap:16px;padding:17px 22px;cursor:pointer;" style-hover="background:#fbfaf8;">
+              <span style="width:30px;height:30px;flex:none;border-radius:8px;background: {{ v.badgeBg }};color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:13px;">{{ v.n }}</span>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:16px;font-weight:600;color:#0f172a;">{{ v.label }}</div>
+                <div style="font-size:12.5px;color:#8a8579;margin-top:2px;">{{ v.desc }}</div>
+              </div>
+              <span style="font-size:11px;color:#a8a294;font-family:'Geist Mono',monospace;white-space:nowrap;">{{ v.supLabel }}</span>
+              <span style="font-size:15px;color:#a8a294;width:16px;text-align:center;">{{ v.caret }}</span>
+            </div>
+            <sc-if value="{{ v.open }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:2px 22px 22px 68px;">
+                <div style="font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#a8a294;margin:14px 0 9px;">Process sub-modules</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <sc-for list="{{ v.subs }}" as="sm" hint-placeholder-count="5">
+                    <span style="font-size:12.5px;padding:4px 11px;border-radius:8px;background:#f3f2ee;color:#57534e;">{{ sm }}</span>
+                  </sc-for>
+                </div>
+                <sc-for list="{{ v.groups }}" as="g" hint-placeholder-count="2">
+                  <div style="font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#a8a294;margin:18px 0 9px;">{{ g.title }}</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    <sc-for list="{{ g.suppliers }}" as="sup" hint-placeholder-count="3">
+                      <span onClick="{{ sup.onClick }}" style="font-size:12.5px;padding:4px 11px;border-radius:999px;border:1px solid #e2ded6;background:#fbfaf8;color:#3f3b34;cursor:pointer;" style-hover="border:1px solid #0f172a;color:#0f172a;">{{ sup.name }}</span>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ SUPPLIERS ============ -->
+    <sc-if value="{{ isSuppliers }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:44px 0 80px;">
+      <h1 style="font-size:30px;font-weight:600;letter-spacing:-0.02em;color:#0f172a;margin:0 0 4px;">Suppliers</h1>
+      <p style="font-size:14px;color:#8a8579;margin:0 0 24px;">{{ supplierCountLabel }}</p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:26px;">
+        <sc-for list="{{ stagePills }}" as="s" hint-placeholder-count="8">
+          <span onClick="{{ s.onClick }}" style="font-size:13px;font-weight:500;padding:7px 13px;border-radius:9px;cursor:pointer;border:1px solid {{ s.border }};background: {{ s.bg }};color: {{ s.fg }};">{{ s.label }}</span>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+        <sc-for list="{{ supplierList }}" as="s" hint-placeholder-count="9">
+          <div onClick="{{ s.onClick }}" style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:18px 20px;cursor:pointer;" style-hover="border:1px solid #0f172a;">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;">
+              <span style="font-weight:600;font-size:15.5px;color:#0f172a;">{{ s.name }}</span>
+              <span style="font-size:11.5px;color:#a8a294;white-space:nowrap;">{{ s.hq }}</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;">
+              <sc-for list="{{ s.modelTags }}" as="m" hint-placeholder-count="1">
+                <span style="font-size:11px;font-weight:500;padding:2px 9px;border-radius:6px;background: {{ m.bg }};color: {{ m.fg }};">{{ m.label }}</span>
+              </sc-for>
+            </div>
+            <div style="font-size:11.5px;color:#a8a294;margin-top:10px;">{{ s.stageSummary }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ SUPPLIER DETAIL ============ -->
+    <sc-if value="{{ isSupplier }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:32px 0 80px;max-width:860px;">
+      <div style="font-size:12.5px;color:#a8a294;margin-bottom:20px;">
+        <span onClick="{{ goSuppliers }}" style="cursor:pointer;color:#8a8579;">Suppliers</span>
+        <span style="margin:0 7px;">›</span>
+        <span>{{ cs.name }}</span>
+      </div>
+
+      <div style="margin-bottom:26px;">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <h1 style="font-size:32px;font-weight:600;letter-spacing:-0.02em;color:#0f172a;margin:0;">{{ cs.name }}</h1>
+          <sc-for list="{{ cs.modelTags }}" as="m" hint-placeholder-count="1">
+            <span style="font-size:11.5px;font-weight:500;padding:3px 10px;border-radius:6px;background: {{ m.bg }};color: {{ m.fg }};">{{ m.label }}</span>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;font-size:13.5px;color:#8a8579;">
+          <span>{{ cs.hq }}</span>
+          <span>{{ cs.stageCountLabel }}</span>
+          <span>{{ cs.productCountLabel }}</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 16px;">Role across the value chain</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <sc-for list="{{ cs.stageLabels }}" as="st" hint-placeholder-count="3">
+              <span style="font-size:13px;padding:6px 14px;border-radius:999px;background:#eef4f4;color:#2c6360;font-weight:500;">{{ st }}</span>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 16px;">Products in this supply chain</h2>
+          <sc-if value="{{ cs.hasProducts }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <sc-for list="{{ cs.products }}" as="p" hint-placeholder-count="4">
+                <div onClick="{{ p.onClick }}" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 4px;border-bottom:1px solid #efede7;cursor:pointer;" style-hover="background:#f6f4ef;">
+                  <div style="display:flex;align-items:center;gap:9px;">
+                    <span style="width:7px;height:7px;border-radius:50%;flex:none;background: {{ p.domainColor }};"></span>
+                    <span style="font-weight:500;color:#0f172a;font-size:14px;">{{ p.name }}</span>
+                    <span style="font-size:12px;color:#a8a294;">{{ p.vendor }}</span>
+                  </div>
+                  <span style="font-size:11.5px;color:#8a8579;font-family:'Geist Mono',monospace;">{{ p.stageLabel }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ cs.noProducts }}" hint-placeholder-val="{{ false }}">
+            <p style="font-size:13px;color:#a8a294;margin:0;">This supplier serves the broader value chain; no individual product links are recorded in the current batch.</p>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ GLOSSARY ============ -->
+    <sc-if value="{{ isGlossary }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:44px 0 80px;">
+      <h1 style="font-size:30px;font-weight:600;letter-spacing:-0.02em;color:#0f172a;margin:0 0 6px;">Knowledge base</h1>
+      <p style="font-size:14.5px;color:#8a8579;margin:0;max-width:660px;">Plain-language first. Every term opens with a one-liner, then the working explanation and full technical detail — with sources and what it connects to.</p>
+      <sc-for list="{{ glossaryGroups }}" as="g" hint-placeholder-count="5">
+        <div style="margin-top:30px;">
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#9a6b3f;margin-bottom:12px;">{{ g.label }}</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+            <sc-for list="{{ g.terms }}" as="t" hint-placeholder-count="3">
+              <div onClick="{{ t.onClick }}" style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:16px 18px;cursor:pointer;" style-hover="border:1px solid #0f172a;">
+                <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+                  <span style="font-weight:600;font-size:15px;color:#0f172a;">{{ t.term }}</span>
+                  <sc-if value="{{ t.hasAcronym }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:11px;font-family:'Geist Mono',monospace;color:#a8a294;">{{ t.acronym }}</span>
+                  </sc-if>
+                  <sc-if value="{{ t.isProcess }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size:9.5px;font-weight:600;padding:1px 6px;border-radius:5px;background:#eef4f4;color:#2c6360;text-transform:uppercase;letter-spacing:0.04em;">Process</span>
+                  </sc-if>
+                </div>
+                <p style="font-size:12.5px;line-height:1.5;color:#8a8579;margin:7px 0 0;">{{ t.l1short }}</p>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- ============ TERM / PROCESS PAGE ============ -->
+    <sc-if value="{{ isTerm }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:32px 0 80px;max-width:820px;">
+      <div style="font-size:12.5px;color:#a8a294;margin-bottom:20px;">
+        <span onClick="{{ goGlossary }}" style="cursor:pointer;color:#8a8579;">Knowledge base</span>
+        <span style="margin:0 7px;">›</span>
+        <span>{{ ct.term }}</span>
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;">
+          <span style="font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:999px;background:#eceef5;color:#475569;text-transform:uppercase;letter-spacing:0.05em;">{{ ct.categoryLabel }}</span>
+          <h1 style="font-size:31px;font-weight:600;letter-spacing:-0.02em;color:#0f172a;margin:0;">{{ ct.term }}</h1>
+          <sc-if value="{{ ct.hasAcronym }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size:15px;font-family:'Geist Mono',monospace;color:#a8a294;">{{ ct.acronym }}</span>
+          </sc-if>
+        </div>
+        <sc-if value="{{ ct.hasAliases }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;color:#a8a294;margin-top:8px;font-family:'Geist Mono',monospace;">also: {{ ct.aliasLine }}</div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <div style="font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#9a6b3f;margin-bottom:11px;">In plain terms</div>
+          <p style="font-size:18px;line-height:1.55;color:#1c1a17;margin:0;font-weight:450;"><span>{{ ct.l1Node }}</span></p>
+          <sc-if value="{{ ct.hasAnalogy }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:14px;font-style:italic;color:#8a7a5f;margin-top:14px;border-left:2px solid #e2c9a8;padding-left:13px;">{{ ct.analogy }}</div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ ct.showL2 }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <div style="font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin-bottom:11px;">How it works</div>
+          <p style="font-size:15px;line-height:1.65;color:#3f3b34;margin:0;"><span>{{ ct.l2Node }}</span></p>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ct.showL3 }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <div style="font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin-bottom:11px;">Technical detail</div>
+          <p style="font-size:14.5px;line-height:1.65;color:#57534e;margin:0;"><span>{{ ct.l3Node }}</span></p>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ct.hasProc }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+            <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0;">How the process works</h2>
+            <sc-if value="{{ ct.hasStage }}" hint-placeholder-val="{{ false }}">
+              <span onClick="{{ ct.onStage }}" style="font-size:11.5px;color:#2c6360;cursor:pointer;font-weight:500;">{{ ct.stageName }} stage →</span>
+            </sc-if>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0;">
+            <sc-for list="{{ ct.steps }}" as="s" hint-placeholder-count="4">
+              <div style="display:flex;gap:14px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #f4f2ec;">
+                <span style="width:24px;height:24px;flex:none;border-radius:7px;background:#f3ece2;color:#8a5a2b;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:12px;">{{ s.n }}</span>
+                <span style="font-size:14px;line-height:1.5;color:#3f3b34;padding-top:2px;">{{ s.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-for list="{{ ct.procGroups }}" as="g" hint-placeholder-count="2">
+            <div style="font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#a8a294;margin:16px 0 9px;">{{ g.title }}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+              <sc-for list="{{ g.suppliers }}" as="sup" hint-placeholder-count="3">
+                <span onClick="{{ sup.onClick }}" style="font-size:12.5px;padding:4px 11px;border-radius:999px;border:1px solid #e2ded6;background:#fbfaf8;color:#3f3b34;cursor:pointer;" style-hover="border:1px solid #0f172a;color:#0f172a;">{{ sup.name }}</span>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ct.hasWhy }}" hint-placeholder-val="{{ false }}">
+        <div style="border-left:3px solid #9a6b3f;background:#faf4ec;border-radius:0 10px 10px 0;padding:16px 20px;">
+          <div style="font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#9a6b3f;margin-bottom:6px;">Why it matters</div>
+          <p style="font-size:14.5px;line-height:1.55;color:#3f3b34;margin:0;"><span>{{ ct.whyNode }}</span></p>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ct.hasConnects }}" hint-placeholder-val="{{ false }}">
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:22px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 14px;">Connects to</h2>
+          <div style="display:flex;flex-direction:column;">
+            <sc-for list="{{ ct.connects }}" as="c" hint-placeholder-count="4">
+              <div onClick="{{ c.onClick }}" style="display:flex;align-items:center;gap:11px;padding:10px 2px;border-bottom:1px solid #efede7;cursor:pointer;" style-hover="background:#fbfaf8;">
+                <span style="font-size:11px;font-family:'Geist Mono',monospace;color:#a8a294;width:96px;flex:none;">{{ c.rel }}</span>
+                <span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;background: {{ c.kBg }};color: {{ c.kFg }};text-transform:uppercase;letter-spacing:0.03em;flex:none;">{{ c.kindLabel }}</span>
+                <span style="font-size:14px;font-weight:500;color:#0f172a;">{{ c.name }}</span>
+                <span style="margin-left:auto;color:#cfc9bd;font-size:13px;">→</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <div style="border:1px solid #e5e2db;border-radius:12px;background:#fbfaf8;padding:20px 24px;">
+          <h2 style="font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:#8a8579;margin:0 0 12px;">Sources</h2>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <sc-for list="{{ ct.sources }}" as="src" hint-placeholder-count="1">
+              <div style="display:flex;gap:12px;align-items:baseline;">
+                <span style="font-size:10.5px;font-family:'Geist Mono',monospace;color:#a8a294;flex:none;width:54px;">{{ src.id }}</span>
+                <div><span style="font-size:13.5px;color:#1c1a17;">{{ src.title }}</span><span style="font-size:12px;color:#8a8579;"> — {{ src.meta }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ ct.hasLevelHint }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:12px;color:#a8a294;font-family:'Geist Mono',monospace;text-align:center;padding:4px;">{{ ct.levelHint }}</div>
+        </sc-if>
+
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ LEARN (FAB TO RACK) ============ -->
+    <sc-if value="{{ isLearn }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:32px 0 80px;max-width:760px;">
+      <div style="font-size:12.5px;color:#a8a294;margin-bottom:20px;">
+        <span onClick="{{ goHome }}" style="cursor:pointer;color:#8a8579;">Home</span>
+        <span style="margin:0 7px;">›</span>
+        <span>Guided tour</span>
+      </div>
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#9a6b3f;margin-bottom:14px;">Guided path</div>
+      <h1 style="font-size:34px;font-weight:600;letter-spacing:-0.025em;color:#0f172a;margin:0;">How an AI chip is made</h1>
+      <p style="font-size:16px;line-height:1.55;color:#57534e;margin:14px 0 0;max-width:600px;">Follow one accelerator from raw silicon to a data-center rack — nine steps, each linking to the concept or stage behind it.</p>
+
+      <div style="margin-top:34px;">
+        <sc-for list="{{ learnSteps }}" as="s" hint-placeholder-count="9">
+          <div style="display:flex;gap:18px;align-items:stretch;">
+            <div style="display:flex;flex-direction:column;align-items:center;flex:none;width:34px;">
+              <span style="width:34px;height:34px;flex:none;border-radius:50%;background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:13px;font-weight:600;">{{ s.n }}</span>
+              <sc-if value="{{ s.notLast }}" hint-placeholder-val="{{ true }}">
+                <span style="width:2px;flex:1;background:#e5e2db;margin:4px 0;min-height:18px;"></span>
+              </sc-if>
+            </div>
+            <div style="flex:1;min-width:0;border:1px solid #e5e2db;border-radius:12px;background:#fff;padding:18px 22px;margin-bottom:14px;">
+              <h2 style="font-size:18px;font-weight:600;color:#0f172a;margin:0;">{{ s.title }}</h2>
+              <p style="font-size:14.5px;line-height:1.55;color:#3f3b34;margin:8px 0 0;">{{ s.l1 }}</p>
+              <sc-if value="{{ s.showL2 }}" hint-placeholder-val="{{ false }}">
+                <p style="font-size:13.5px;line-height:1.6;color:#57534e;margin:9px 0 0;">{{ s.l2 }}</p>
+              </sc-if>
+              <div style="display:flex;align-items:center;gap:14px;margin-top:13px;flex-wrap:wrap;">
+                <span onClick="{{ s.onClick }}" style="font-size:12.5px;font-weight:600;color:#9a6b3f;cursor:pointer;">{{ s.linkLabel }} →</span>
+                <span style="font-size:12px;color:#a8a294;">{{ s.why }}</span>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+  </main>
+
+  <sc-if value="{{ pop.open }}" hint-placeholder-val="{{ false }}">
+  <div onMouseEnter="{{ pop.cancel }}" onMouseLeave="{{ pop.close }}" style="position:fixed;z-index:90;left: {{ pop.x }}px;top: {{ pop.y }}px;width:280px;background:#fff;border:1px solid #d8d3c9;border-radius:12px;box-shadow:0 14px 34px rgba(0,0,0,0.16);padding:15px 17px;font-family:'Geist',sans-serif;">
+    <div style="display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;">
+      <span style="font-weight:600;font-size:14.5px;color:#0f172a;">{{ pop.term }}</span>
+      <sc-if value="{{ pop.hasAcronym }}" hint-placeholder-val="{{ false }}">
+        <span style="font-size:11px;font-family:'Geist Mono',monospace;color:#a8a294;">{{ pop.acronym }}</span>
+      </sc-if>
+    </div>
+    <p style="font-size:12.5px;line-height:1.5;color:#57534e;margin:7px 0 0;">{{ pop.l1 }}</p>
+    <sc-if value="{{ pop.hasAnalogy }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:12px;font-style:italic;color:#8a7a5f;margin-top:8px;border-left:2px solid #e2c9a8;padding-left:9px;">{{ pop.analogy }}</div>
+    </sc-if>
+    <span onClick="{{ pop.openFull }}" style="display:inline-block;margin-top:11px;font-size:12px;font-weight:600;color:#9a6b3f;cursor:pointer;">Open full page →</span>
+  </div>
+  </sc-if>
+
+  <footer style="border-top:1px solid #e5e2db;margin-top:20px;">
+    <div style="max-width:1200px;margin:0 auto;padding:22px 24px;font-size:12px;color:#a8a294;text-align:center;">
+      AI Atlas · Open semiconductor industry database · Data from public filings, datasheets, and published estimates · Every estimate carries a source
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    screen: 'atlas',
+    pop: { open: false },
+    selectedTermId: 'hbm',
+    productQuery: '',
+    productDomain: 'all',
+    productArch: 'all',
+    productSub: null,
+    facets: { status: 'all', company_type: 'all', packaging: 'all', node_maturity: 'all', transistor_arch: 'all', material_system: 'all', integration_level: 'all', end_market: 'all' },
+    supplierStage: 'all',
+    mapFocus: 'logic',
+    vcOpen: 'foundry_fab',
+    selectedProductId: 'nvidia-b200',
+    selectedSupplierId: 'tsmc',
+  };
+
+  STAGES = [
+    { key: 'design_ip_eda', label: 'Design / EDA' },
+    { key: 'foundry_fab', label: 'Foundry' },
+    { key: 'materials', label: 'Materials' },
+    { key: 'equipment', label: 'Equipment' },
+    { key: 'packaging_osat', label: 'Packaging' },
+    { key: 'test', label: 'Test' },
+    { key: 'distribution', label: 'Distribution' },
+  ];
+
+  DOMAIN_LIST = ['logic','memory','micro','analog','rf','opto','sensors','discretes'];
+  DOMAINS = {
+    logic: { label: 'Logic', phase: 'now', color: '#9a6b3f', summary: 'Compute silicon — AI accelerators, CPUs, GPUs, SoCs and programmable logic.', subs: [
+      { key: 'ai_accelerator', label: 'AI Accelerators' }, { key: 'gpu_graphics', label: 'GPUs (graphics)' }, { key: 'cpu', label: 'CPUs' },
+      { key: 'soc', label: 'Application SoCs' }, { key: 'fpga', label: 'FPGA / PLD' }, { key: 'networking', label: 'Networking logic' },
+      { key: 'asic_assp', label: 'ASIC / ASSP' }, { key: 'standard_logic', label: 'Standard logic' } ] },
+    memory: { label: 'Memory', phase: 'now', color: '#3f7d7a', summary: 'Volatile and non-volatile storage — HBM is the keystone for AI accelerators.', subs: [
+      { key: 'dram_hbm', label: 'HBM' }, { key: 'dram_commodity', label: 'DRAM (DDR / LPDDR / GDDR)' }, { key: 'nand', label: 'NAND Flash' },
+      { key: 'nor', label: 'NOR Flash' }, { key: 'sram', label: 'SRAM' }, { key: 'emerging_nvm', label: 'Emerging NVM' } ] },
+    micro: { label: 'Micro', phase: 'now', color: '#b0894a', summary: 'Microcontrollers and DSPs. MPUs fold into Logic per the taxonomy.', subs: [
+      { key: 'mcu', label: 'MCU' }, { key: 'dsp', label: 'DSP' } ] },
+    analog: { label: 'Analog', phase: 'later', color: '#6b7f86', summary: 'Signal chain, power management and clock/timing. Scaffolded for a later phase.', subs: [
+      { key: 'signal_chain', label: 'Signal chain' }, { key: 'pmic', label: 'Power management' }, { key: 'clock_timing', label: 'Clock & timing' } ] },
+    rf: { label: 'RF / Wireless', phase: 'later', color: '#8c6a8e', summary: 'RF front-end and connectivity — its own III-V materials supply chain.', subs: [
+      { key: 'pa_lna', label: 'PA / LNA' }, { key: 'rf_switch', label: 'Switches / mixers' }, { key: 'filters', label: 'Filters (SAW / BAW)' },
+      { key: 'fem', label: 'Front-end modules' }, { key: 'transceivers', label: 'Transceivers' }, { key: 'connectivity', label: 'Connectivity SoC' } ] },
+    opto: { label: 'Optoelectronics', phase: 'later', color: '#4f7a9a', summary: 'Image sensors, lasers and silicon photonics — rising for datacenter interconnect.', subs: [
+      { key: 'cis', label: 'Image sensors' }, { key: 'led', label: 'LEDs' }, { key: 'laser', label: 'Laser diodes' },
+      { key: 'photodetector', label: 'Photodetectors' }, { key: 'silicon_photonics', label: 'Silicon photonics' } ] },
+    sensors: { label: 'Sensors', phase: 'later', color: '#7d8a52', summary: 'MEMS, magnetic, environmental and optical sensing and actuators.', subs: [
+      { key: 'mems', label: 'MEMS' }, { key: 'magnetic', label: 'Magnetic' }, { key: 'environmental', label: 'Environmental' }, { key: 'optical_sensor', label: 'Optical' } ] },
+    discretes: { label: 'Discretes & Power', phase: 'later', color: '#a06650', summary: 'Diodes, power transistors and wide-bandgap SiC / GaN devices.', subs: [
+      { key: 'diodes', label: 'Diodes' }, { key: 'mosfet', label: 'MOSFET' }, { key: 'igbt', label: 'IGBT' }, { key: 'wbg', label: 'SiC / GaN' }, { key: 'power_modules', label: 'Power modules' } ] },
+  };
+
+  SUBCAT = {
+    ai_accelerator_gpu: 'AI GPU', ai_accelerator_asic: 'AI ASIC', cpu_server: 'Server CPU',
+    cpu_client: 'Client CPU', soc_mobile: 'Mobile SoC', fpga: 'FPGA', mcu_embedded: 'MCU / Embedded',
+    networking_dpu: 'Networking / DPU', dram_hbm: 'HBM', dram_commodity: 'DRAM', nand: 'NAND',
+    nor: 'NOR Flash', emerging: 'Emerging Memory',
+  };
+
+  NODE_MAT = { leading_edge: 'Leading edge (≤7nm)', advanced: 'Advanced (7–28nm)', mature: 'Mature (≥28nm)', legacy: 'Legacy' };
+  ARCH = { planar: 'Planar', finfet: 'FinFET', gaa_nanosheet: 'GAA nanosheet', cfet: 'CFET' };
+  MAT = { si: 'Silicon', soi: 'SOI', sic: 'SiC', gan: 'GaN', gaas: 'GaAs', inp: 'InP' };
+  INTEG = { die: 'Die', package: 'Package', module: 'Module', board: 'Board', system: 'System' };
+  MARKET = { datacenter: 'Datacenter', mobile: 'Mobile', automotive: 'Automotive', industrial: 'Industrial', consumer: 'Consumer', comms: 'Comms' };
+  PACK = { cowos_2_5d: '2.5D / CoWoS', stacked_3d: '3D stack / TSV', fanout: 'Fan-out / InFO', standard: 'Standard / flip-chip' };
+  LIFECYCLE = { production: 'Production', sampling: 'Sampling', announced: 'Announced', eol: 'End of life' };
+  COMPANY = { fabless: 'Fabless', idm: 'IDM', foundry: 'Foundry' };
+  VENDOR_TYPE = { 'NVIDIA': 'fabless', 'AMD': 'fabless', 'Google': 'fabless', 'Amazon': 'fabless', 'Intel': 'idm', 'SK Hynix': 'idm', 'Samsung': 'idm', 'Micron': 'idm' };
+  PRODUCT_PACK = { 'nvidia-b200': 'cowos_2_5d', 'amd-mi300x': 'stacked_3d', 'amd-mi355x': 'cowos_2_5d', 'google-tpu-v6e': 'cowos_2_5d', 'aws-trainium2': 'cowos_2_5d', 'intel-xeon-6': 'standard', 'amd-epyc-turin': 'standard', 'skhynix-hbm3e-8hi': 'stacked_3d', 'samsung-hbm3e-12hi': 'stacked_3d', 'micron-hbm3e-8hi': 'stacked_3d', 'micron-ddr5': 'standard' };
+
+  ARCH_BUCKETS = [
+    { key: 'all', label: 'All products', subcats: null },
+    { key: 'accel_gpu', label: 'AI Accelerators & GPUs', subcats: ['ai_accelerator_gpu', 'gpu_graphics'] },
+    { key: 'cpu', label: 'CPUs', subcats: ['cpu_server', 'cpu_client'] },
+    { key: 'asic', label: 'AI ASICs', subcats: ['ai_accelerator_asic'] },
+    { key: 'memory', label: 'Memory Architectures', subcats: ['dram_hbm', 'dram_commodity', 'nand', 'nor', 'sram', 'emerging'] },
+  ];
+
+  FACET_GROUPS = [
+    { label: 'Business', keys: ['status', 'company_type'] },
+    { label: 'Functional', keys: ['integration_level', 'end_market'] },
+    { label: 'Manufacturing', keys: ['node_maturity', 'transistor_arch', 'packaging', 'material_system'] },
+  ];
+
+  FACET_DEFS = [
+    { key: 'status', label: 'Status', map: 'LIFECYCLE', get: (p) => p.status },
+    { key: 'company_type', label: 'Company type', map: 'COMPANY', get: (p) => this.VENDOR_TYPE[p.vendor] },
+    { key: 'packaging', label: 'Packaging', map: 'PACK', get: (p) => this.PRODUCT_PACK[p.id] },
+    { key: 'node_maturity', label: 'Node maturity', map: 'NODE_MAT', get: (p) => (p.attrs || {}).node_maturity },
+    { key: 'transistor_arch', label: 'Transistor arch', map: 'ARCH', get: (p) => (p.attrs || {}).transistor_arch },
+    { key: 'material_system', label: 'Material', map: 'MAT', get: (p) => (p.attrs || {}).material_system },
+    { key: 'integration_level', label: 'Integration', map: 'INTEG', get: (p) => (p.attrs || {}).integration_level },
+    { key: 'end_market', label: 'End market', map: 'MARKET', get: (p) => (p.attrs || {}).end_market },
+  ];
+
+  MODEL_LABEL = { idm: 'IDM', fabless: 'Fabless', foundry: 'Foundry', osat: 'OSAT', eda: 'EDA', ip: 'IP', equipment: 'Equipment', materials: 'Materials', distribution: 'Distribution', design_services: 'Design services', gases: 'Gases', infrastructure: 'Infrastructure' };
+  MODEL_COLOR = {
+    idm: { bg: '#e7f0ef', fg: '#2c6360' }, foundry: { bg: '#e7f0ef', fg: '#2c6360' }, osat: { bg: '#e7f0ef', fg: '#2c6360' },
+    fabless: { bg: '#eceef5', fg: '#475569' }, eda: { bg: '#eceef5', fg: '#475569' }, ip: { bg: '#eceef5', fg: '#475569' }, design_services: { bg: '#eceef5', fg: '#475569' },
+    equipment: { bg: '#f3ecdf', fg: '#8a5a2b' }, materials: { bg: '#f1eae3', fg: '#7a5230' }, distribution: { bg: '#f1f0ec', fg: '#6b6557' },
+    gases: { bg: '#eaf0ec', fg: '#3f6b50' }, infrastructure: { bg: '#eef0f3', fg: '#566273' },
+  };
+
+  SUP = {
+    tsmc: { name: 'TSMC', hq: 'Taiwan', models: ['foundry'], stages: ['foundry_fab','packaging_osat','test'] },
+    samsung: { name: 'Samsung', hq: 'South Korea', models: ['idm','foundry'], stages: ['foundry_fab','packaging_osat','test'] },
+    'intel-foundry': { name: 'Intel Foundry', hq: 'USA', models: ['idm','foundry'], stages: ['foundry_fab','packaging_osat','test'] },
+    skhynix: { name: 'SK Hynix', hq: 'South Korea', models: ['idm'], stages: ['foundry_fab','packaging_osat','test'] },
+    micron: { name: 'Micron', hq: 'USA', models: ['idm'], stages: ['foundry_fab','packaging_osat','test'] },
+    synopsys: { name: 'Synopsys', hq: 'USA', models: ['eda'], stages: ['design_ip_eda'] },
+    cadence: { name: 'Cadence', hq: 'USA', models: ['eda'], stages: ['design_ip_eda'] },
+    arm: { name: 'Arm', hq: 'UK', models: ['ip'], stages: ['design_ip_eda'] },
+    broadcom: { name: 'Broadcom', hq: 'USA', models: ['fabless'], stages: ['design_ip_eda','packaging_osat'] },
+    alchip: { name: 'Alchip', hq: 'Taiwan', models: ['design_services'], stages: ['design_ip_eda'] },
+    ase: { name: 'ASE', hq: 'Taiwan', models: ['osat'], stages: ['packaging_osat','test'] },
+    amkor: { name: 'Amkor', hq: 'USA', models: ['osat'], stages: ['packaging_osat','test'] },
+    asml: { name: 'ASML', hq: 'Netherlands', models: ['equipment'], stages: ['equipment'] },
+    'applied-materials': { name: 'Applied Materials', hq: 'USA', models: ['equipment'], stages: ['equipment'] },
+    'lam-research': { name: 'Lam Research', hq: 'USA', models: ['equipment'], stages: ['equipment'] },
+    'tokyo-electron': { name: 'Tokyo Electron', hq: 'Japan', models: ['equipment'], stages: ['equipment'] },
+    kla: { name: 'KLA', hq: 'USA', models: ['equipment'], stages: ['equipment'] },
+    advantest: { name: 'Advantest', hq: 'Japan', models: ['equipment'], stages: ['equipment','test'] },
+    teradyne: { name: 'Teradyne', hq: 'USA', models: ['equipment'], stages: ['equipment','test'] },
+    besi: { name: 'BESI', hq: 'Netherlands', models: ['equipment'], stages: ['equipment','packaging_osat'] },
+    asmpt: { name: 'ASMPT', hq: 'Singapore', models: ['equipment'], stages: ['equipment','packaging_osat'] },
+    'shin-etsu': { name: 'Shin-Etsu', hq: 'Japan', models: ['materials'], stages: ['materials'] },
+    sumco: { name: 'SUMCO', hq: 'Japan', models: ['materials'], stages: ['materials'] },
+    jsr: { name: 'JSR', hq: 'Japan', models: ['materials'], stages: ['materials'] },
+    'tokyo-ohka': { name: 'Tokyo Ohka', hq: 'Japan', models: ['materials'], stages: ['materials'] },
+    hoya: { name: 'Hoya', hq: 'Japan', models: ['materials'], stages: ['materials'] },
+    ibiden: { name: 'Ibiden', hq: 'Japan', models: ['materials'], stages: ['materials','packaging_osat'] },
+    unimicron: { name: 'Unimicron', hq: 'Taiwan', models: ['materials'], stages: ['materials','packaging_osat'] },
+    shinko: { name: 'Shinko', hq: 'Japan', models: ['materials'], stages: ['materials','packaging_osat'] },
+    arrow: { name: 'Arrow', hq: 'USA', models: ['distribution'], stages: ['distribution'] },
+    avnet: { name: 'Avnet', hq: 'USA', models: ['distribution'], stages: ['distribution'] },
+    'air-liquide': { name: 'Air Liquide', hq: 'France', models: ['gases'], stages: ['materials'] },
+    linde: { name: 'Linde', hq: 'Ireland', models: ['gases'], stages: ['materials'] },
+    ovivo: { name: 'Ovivo', hq: 'Canada', models: ['infrastructure'], stages: ['materials'] },
+    kurita: { name: 'Kurita', hq: 'Japan', models: ['infrastructure'], stages: ['materials'] },
+  };
+
+  VALUE_CHAIN = [
+    { key: 'design_ip_eda', label: 'Design & IP', desc: 'EDA tools, IP cores, PDKs and design services', subs: ['Synthesis & place-and-route','Verification / simulation / DFT','Physical sign-off','IP cores — CPU/GPU, PCIe/HBM PHYs, SerDes','Foundry PDKs & design services'], groups: [ { title: 'Key suppliers', ids: ['synopsys','cadence','arm','broadcom','alchip'] } ] },
+    { key: 'foundry_fab', label: 'Foundry — front-end fab', desc: 'Wafer fabrication: hundreds of layered steps, FEOL → MOL → BEOL', subs: ['Deposition — CVD / ALD / PVD / epitaxy','Photolithography — DUV / EUV / High-NA','Etch — dry / wet','Doping — implant / anneal','CMP / planarization','Clean / metrology / inspection'], groups: [ { title: 'Foundries', ids: ['tsmc','samsung','intel-foundry'] }, { title: 'Equipment', ids: ['asml','applied-materials','lam-research','tokyo-electron','kla'] }, { title: 'Materials', ids: ['shin-etsu','sumco','jsr','tokyo-ohka','hoya'] }, { title: 'Infrastructure & utilities', ids: ['air-liquide','linde','ovivo','kurita'] } ] },
+    { key: 'materials', label: 'Materials', desc: 'Wafers, photoresist, gases, slurries, masks and substrates feeding the fab', subs: ['Silicon wafers (Si / SOI / SiC / GaN)','Photoresist & ancillaries','Specialty / electronic gases','Ultra-pure water & process chemicals','CMP slurries & pads','Photomask blanks & masks','Package substrates (ABF)'], groups: [ { title: 'Wafers, resists & substrates', ids: ['shin-etsu','sumco','jsr','tokyo-ohka','hoya','ibiden','unimicron','shinko'] }, { title: 'Specialty gases', ids: ['air-liquide','linde'] }, { title: 'Ultra-pure water & chemicals', ids: ['ovivo','kurita'] } ] },
+    { key: 'equipment', label: 'Equipment (WFE)', desc: 'Wafer-fab and packaging equipment — a highly concentrated layer', subs: ['Lithography scanners (EUV / DUV)','Deposition tools','Etch tools','CMP','Ion implant','Metrology / inspection','ATE & handlers','Advanced-packaging / bonding'], groups: [ { title: 'Suppliers', ids: ['asml','applied-materials','lam-research','tokyo-electron','kla','advantest','teradyne','besi','asmpt'] } ] },
+    { key: 'packaging_osat', label: 'Assembly & packaging', desc: 'Back-end assembly and advanced packaging — dominates AI-accelerator BOMs', subs: ['Wafer thinning / dicing','Interconnect — wire bond / flip-chip','Substrate — organic / ABF','2.5D — interposer / CoWoS','3D — TSV / SoIC / hybrid bonding','Fan-out — InFO / FOWLP','Chiplets + UCIe / EMIB'], groups: [ { title: 'OSAT & foundry', ids: ['tsmc','ase','amkor'] }, { title: 'Substrate materials', ids: ['ibiden','unimicron','shinko'] }, { title: 'Bonding tools', ids: ['besi','asmpt'] } ] },
+    { key: 'test', label: 'Test', desc: 'Wafer sort, final test, burn-in and system-level test', subs: ['Wafer test / probe (sort)','Final test','Burn-in','System-level test (SLT)'], groups: [ { title: 'OSAT', ids: ['ase','amkor'] }, { title: 'ATE', ids: ['advantest','teradyne'] } ] },
+    { key: 'distribution', label: 'Distribution', desc: 'Distributors and direct channels to OEMs', subs: ['Global distributors','Direct / design-win channels'], groups: [ { title: 'Distributors', ids: ['arrow','avnet'] } ] },
+  ];
+
+  SRC = {
+    'src-001': { title: 'Blackwell Architecture Technical Brief', meta: 'NVIDIA · datasheet · 2024-03' },
+    'src-002': { title: 'AI accelerator BOM cost estimates', meta: 'Silicon Analysts · estimate · 2026-04' },
+    'src-003': { title: 'B200 package teardown analysis', meta: 'TechInsights · teardown · 2025-09' },
+    'src-004': { title: 'HBM3E product datasheet', meta: 'SK Hynix · datasheet · 2024-05' },
+    'est': { title: 'AI Atlas internal cost model', meta: 'AI Atlas · estimate · 2026-06' },
+  };
+
+  STATUS = {
+    production: { bg: '#dcfce7', fg: '#166534' },
+    sampling: { bg: '#fef9c3', fg: '#854d0e' },
+    announced: { bg: '#dbeafe', fg: '#1e40af' },
+    eol: { bg: '#f1f0ec', fg: '#6b7280' },
+  };
+
+  CONF = { high: { l: 'High', c: '#16a34a' }, med: { l: 'Med', c: '#d97706' }, low: { l: 'Low', c: '#dc2626' } };
+
+  PRODUCTS = [
+    {
+      id: 'nvidia-b200', name: 'NVIDIA B200', vendor: 'NVIDIA', domain: 'logic', sub: 'ai_accelerator', subcat: 'ai_accelerator_gpu',
+      family: 'Blackwell', status: 'production', node: 'TSMC 4NP', avail: '2025', verified: '2026-05',
+      attrs: { node_maturity: 'leading_edge', transistor_arch: 'finfet', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Transistors', value: '208 B', conf: 'med' },
+        { label: 'Die config', value: 'Dual reticle die' },
+        { label: 'FP8 compute', value: '4,500 TFLOPS', conf: 'med' },
+        { label: 'FP4 compute', value: '9,000 TFLOPS', conf: 'low' },
+        { label: 'Memory', value: '192 GB HBM3E' },
+        { label: 'Bandwidth', value: '8.0 TB/s' },
+        { label: 'TDP', value: '1,000 W' },
+        { label: 'Interconnect', value: 'NVLink 5' },
+        { label: 'Form factor', value: 'SXM' },
+      ],
+      bom: { uncertainty: 18, items: [
+        { label: 'Logic die', cost: 380, conf: 'med', source: 'src-002' },
+        { label: 'HBM memory', cost: 2900, qty: 8, note: '8× HBM3E stacks', ref: 'skhynix-hbm3e-8hi', conf: 'med', source: 'src-002' },
+        { label: 'Advanced packaging', cost: 1700, note: 'CoWoS-L interposer + assembly', conf: 'med', source: 'src-003' },
+        { label: 'Substrate', cost: 220, conf: 'low', source: 'est' },
+        { label: 'Assembly & test', cost: 1200, conf: 'low', source: 'est' },
+      ], total: 6400, totalConf: 'med' },
+      supply: { design_ip_eda: ['arm','synopsys','cadence'], foundry_fab: ['tsmc'], materials: ['shin-etsu','ibiden','air-liquide'], equipment: ['asml','applied-materials'], packaging_osat: ['tsmc','ase'], test: ['tsmc','amkor'] },
+      rels: [ { type: 'uses', target: 'skhynix-hbm3e-8hi', qty: 8 }, { type: 'competes_with', target: 'amd-mi300x' } ],
+      sources: ['src-001','src-002','src-003'],
+    },
+    {
+      id: 'amd-mi300x', name: 'AMD MI300X', vendor: 'AMD', domain: 'logic', sub: 'ai_accelerator', subcat: 'ai_accelerator_gpu',
+      family: 'CDNA 3', status: 'production', node: 'TSMC N5 / N6', avail: '2024', verified: '2026-04',
+      attrs: { node_maturity: 'leading_edge', transistor_arch: 'finfet', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Transistors', value: '153 B', conf: 'med' },
+        { label: 'Die config', value: '8 XCD + 4 IOD chiplets' },
+        { label: 'FP8 compute', value: '2,615 TFLOPS', conf: 'med' },
+        { label: 'Memory', value: '192 GB HBM3' },
+        { label: 'Bandwidth', value: '5.3 TB/s' },
+        { label: 'TDP', value: '750 W' },
+      ],
+      bom: { uncertainty: 18, items: [
+        { label: 'Logic chiplets', cost: 520, note: 'XCD + IOD', conf: 'med', source: 'src-002' },
+        { label: 'HBM memory', cost: 2400, qty: 8, note: '8× HBM3 stacks', ref: 'skhynix-hbm3e-8hi', conf: 'med', source: 'src-002' },
+        { label: 'Advanced packaging', cost: 1500, note: 'CoWoS-S + SoIC', conf: 'med', source: 'src-002' },
+        { label: 'Substrate & test', cost: 880, conf: 'low', source: 'est' },
+      ], total: 5300, totalConf: 'med' },
+      supply: { design_ip_eda: ['synopsys','cadence'], foundry_fab: ['tsmc'], materials: ['shin-etsu'], equipment: ['asml'], packaging_osat: ['tsmc','amkor'], test: ['amkor','ase'] },
+      rels: [ { type: 'uses', target: 'skhynix-hbm3e-8hi', qty: 8 }, { type: 'succeeds', target: 'amd-mi355x' }, { type: 'competes_with', target: 'nvidia-b200' } ],
+      sources: ['src-002'],
+    },
+    {
+      id: 'amd-mi355x', name: 'AMD MI355X', vendor: 'AMD', domain: 'logic', sub: 'ai_accelerator', subcat: 'ai_accelerator_gpu',
+      family: 'CDNA 4', status: 'sampling', node: 'TSMC N3', avail: '2025', verified: '2026-05',
+      attrs: { node_maturity: 'leading_edge', transistor_arch: 'finfet', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Die config', value: 'Chiplet, N3 XCD' },
+        { label: 'FP4 compute', value: '~10,000 TFLOPS', conf: 'low' },
+        { label: 'Memory', value: '288 GB HBM3E' },
+        { label: 'TDP', value: '1,400 W' },
+      ],
+      bom: { uncertainty: 20, items: [
+        { label: 'Logic chiplets', cost: 650, conf: 'low', source: 'est' },
+        { label: 'HBM memory', cost: 3600, qty: 8, note: '8× HBM3E 12-Hi', ref: 'samsung-hbm3e-12hi', conf: 'low', source: 'est' },
+        { label: 'Packaging & assembly', cost: 1950, conf: 'low', source: 'est' },
+      ], total: 6200, totalConf: 'low' },
+      supply: { design_ip_eda: ['synopsys','cadence'], foundry_fab: ['tsmc'], equipment: ['asml'], packaging_osat: ['tsmc'], test: ['amkor'] },
+      rels: [ { type: 'uses', target: 'samsung-hbm3e-12hi', qty: 8 } ],
+      sources: ['est'],
+    },
+    {
+      id: 'google-tpu-v6e', name: 'Google TPU v6e', vendor: 'Google', domain: 'logic', sub: 'ai_accelerator', subcat: 'ai_accelerator_asic',
+      family: 'Trillium', status: 'production', node: 'TSMC N5', avail: '2024', verified: '2026-03',
+      attrs: { node_maturity: 'leading_edge', transistor_arch: 'finfet', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Design partner', value: 'Broadcom' },
+        { label: 'BF16 compute', value: '~918 TFLOPS', conf: 'med' },
+        { label: 'Memory', value: '32 GB HBM' },
+        { label: 'Interconnect', value: 'ICI optical' },
+      ],
+      bom: { uncertainty: 20, items: [
+        { label: 'Logic die', cost: 280, conf: 'low', source: 'est' },
+        { label: 'HBM memory', cost: 600, qty: 2, ref: 'skhynix-hbm3e-8hi', conf: 'low', source: 'est' },
+        { label: 'Packaging & test', cost: 520, conf: 'low', source: 'est' },
+      ], total: 1400, totalConf: 'low' },
+      supply: { design_ip_eda: ['broadcom','synopsys'], foundry_fab: ['tsmc'], packaging_osat: ['tsmc'], test: ['ase'] },
+      rels: [ { type: 'uses', target: 'skhynix-hbm3e-8hi', qty: 2 }, { type: 'competes_with', target: 'aws-trainium2' } ],
+      sources: ['est'],
+    },
+    {
+      id: 'aws-trainium2', name: 'AWS Trainium2', vendor: 'Amazon', domain: 'logic', sub: 'ai_accelerator', subcat: 'ai_accelerator_asic',
+      family: 'Trainium', status: 'production', node: 'TSMC N5', avail: '2024', verified: '2026-03',
+      attrs: { node_maturity: 'leading_edge', transistor_arch: 'finfet', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Design partner', value: 'Alchip / Marvell' },
+        { label: 'FP8 compute', value: '~1,300 TFLOPS', conf: 'low' },
+        { label: 'Memory', value: '96 GB HBM3E' },
+        { label: 'TDP', value: '~500 W' },
+      ],
+      bom: { uncertainty: 20, items: [
+        { label: 'Logic die', cost: 300, conf: 'low', source: 'est' },
+        { label: 'HBM memory', cost: 1450, qty: 4, ref: 'micron-hbm3e-8hi', conf: 'low', source: 'est' },
+        { label: 'Packaging & test', cost: 650, conf: 'low', source: 'est' },
+      ], total: 2400, totalConf: 'low' },
+      supply: { design_ip_eda: ['alchip','cadence'], foundry_fab: ['tsmc'], packaging_osat: ['tsmc'], test: ['ase'] },
+      rels: [ { type: 'uses', target: 'micron-hbm3e-8hi', qty: 4 }, { type: 'competes_with', target: 'google-tpu-v6e' } ],
+      sources: ['est'],
+    },
+    {
+      id: 'intel-xeon-6', name: 'Intel Xeon 6', vendor: 'Intel', domain: 'logic', sub: 'cpu', subcat: 'cpu_server',
+      family: 'Granite Rapids', status: 'production', node: 'Intel 3', avail: '2024', verified: '2026-02',
+      attrs: { node_maturity: 'leading_edge', transistor_arch: 'finfet', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Cores', value: 'Up to 128 P-cores' },
+        { label: 'Memory', value: 'DDR5 / MRDIMM' },
+        { label: 'Socket', value: 'LGA 7529' },
+        { label: 'TDP', value: 'Up to 500 W' },
+      ],
+      bom: null,
+      supply: { design_ip_eda: ['synopsys','cadence'], foundry_fab: ['intel-foundry'], materials: ['shin-etsu'], equipment: ['asml','applied-materials'], packaging_osat: ['intel-foundry'], test: ['intel-foundry'] },
+      rels: [ { type: 'competes_with', target: 'amd-epyc-turin' } ],
+      sources: ['est'],
+    },
+    {
+      id: 'amd-epyc-turin', name: 'AMD EPYC Turin', vendor: 'AMD', domain: 'logic', sub: 'cpu', subcat: 'cpu_server',
+      family: 'EPYC 9005', status: 'production', node: 'TSMC N3 / N6', avail: '2024', verified: '2026-02',
+      attrs: { node_maturity: 'leading_edge', transistor_arch: 'finfet', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Cores', value: 'Up to 192 (Zen 5c)' },
+        { label: 'Memory', value: '12-channel DDR5' },
+        { label: 'Socket', value: 'SP5' },
+        { label: 'TDP', value: 'Up to 500 W' },
+      ],
+      bom: null,
+      supply: { design_ip_eda: ['synopsys','cadence'], foundry_fab: ['tsmc'], packaging_osat: ['tsmc','amkor'], test: ['amkor'] },
+      rels: [ { type: 'competes_with', target: 'intel-xeon-6' } ],
+      sources: ['est'],
+    },
+    {
+      id: 'skhynix-hbm3e-8hi', name: 'SK Hynix HBM3E 8-Hi', vendor: 'SK Hynix', domain: 'memory', sub: 'dram_hbm', subcat: 'dram_hbm',
+      family: 'HBM3E', status: 'production', node: '1b-nm DRAM', avail: '2024', verified: '2026-05',
+      attrs: { node_maturity: 'advanced', transistor_arch: 'planar', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Stack height', value: '8-Hi' },
+        { label: 'Capacity', value: '24 GB' },
+        { label: 'Interface', value: '1024-bit' },
+        { label: 'Bandwidth', value: '1.2 TB/s per stack' },
+        { label: 'Pin speed', value: '9.6 Gbps' },
+        { label: 'TSV', value: 'Yes' },
+      ],
+      bom: { uncertainty: 20, items: [
+        { label: 'Base logic die', cost: 25, conf: 'low', source: 'est' },
+        { label: 'DRAM core dies', cost: 280, qty: 8, conf: 'low', source: 'est' },
+        { label: 'TSV stacking', cost: 60, conf: 'low', source: 'est' },
+        { label: 'Package & test', cost: 35, conf: 'low', source: 'est' },
+      ], total: 400, totalConf: 'low' },
+      supply: { foundry_fab: ['skhynix'], materials: ['shin-etsu','sumco','air-liquide','linde'], equipment: ['asml','tokyo-electron'], packaging_osat: ['skhynix'], test: ['skhynix'] },
+      rels: [ { type: 'competes_with', target: 'samsung-hbm3e-12hi' } ],
+      sources: ['src-004','est'],
+    },
+    {
+      id: 'samsung-hbm3e-12hi', name: 'Samsung HBM3E 12-Hi', vendor: 'Samsung', domain: 'memory', sub: 'dram_hbm', subcat: 'dram_hbm',
+      family: 'HBM3E', status: 'sampling', node: '1b-nm DRAM', avail: '2025', verified: '2026-05',
+      attrs: { node_maturity: 'advanced', transistor_arch: 'planar', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Stack height', value: '12-Hi' },
+        { label: 'Capacity', value: '36 GB' },
+        { label: 'Interface', value: '1024-bit' },
+        { label: 'Bandwidth', value: '1.25 TB/s per stack' },
+      ],
+      bom: { uncertainty: 22, items: [
+        { label: 'DRAM core dies', cost: 430, qty: 12, conf: 'low', source: 'est' },
+        { label: 'Stacking & package', cost: 170, conf: 'low', source: 'est' },
+      ], total: 600, totalConf: 'low' },
+      supply: { foundry_fab: ['samsung'], materials: ['shin-etsu'], equipment: ['asml'], packaging_osat: ['samsung'], test: ['samsung'] },
+      rels: [ { type: 'competes_with', target: 'skhynix-hbm3e-8hi' } ],
+      sources: ['est'],
+    },
+    {
+      id: 'micron-hbm3e-8hi', name: 'Micron HBM3E 8-Hi', vendor: 'Micron', domain: 'memory', sub: 'dram_hbm', subcat: 'dram_hbm',
+      family: 'HBM3E', status: 'production', node: '1b-nm DRAM', avail: '2024', verified: '2026-04',
+      attrs: { node_maturity: 'advanced', transistor_arch: 'planar', material_system: 'si', integration_level: 'package', end_market: 'datacenter' },
+      specs: [
+        { label: 'Stack height', value: '8-Hi' },
+        { label: 'Capacity', value: '24 GB' },
+        { label: 'Bandwidth', value: '1.2 TB/s per stack' },
+        { label: 'Power', value: '~30% below peers', conf: 'low' },
+      ],
+      bom: { uncertainty: 20, items: [
+        { label: 'DRAM core dies', cost: 290, qty: 8, conf: 'low', source: 'est' },
+        { label: 'Stacking & package', cost: 110, conf: 'low', source: 'est' },
+      ], total: 400, totalConf: 'low' },
+      supply: { foundry_fab: ['micron'], materials: ['shin-etsu'], equipment: ['applied-materials'], packaging_osat: ['micron'], test: ['micron'] },
+      rels: [ { type: 'competes_with', target: 'skhynix-hbm3e-8hi' } ],
+      sources: ['est'],
+    },
+    {
+      id: 'micron-ddr5', name: 'Micron DDR5 RDIMM', vendor: 'Micron', domain: 'memory', sub: 'dram_commodity', subcat: 'dram_commodity',
+      family: 'DDR5', status: 'production', node: '1b-nm DRAM', avail: '2023', verified: '2026-01',
+      attrs: { node_maturity: 'advanced', transistor_arch: 'planar', material_system: 'si', integration_level: 'module', end_market: 'datacenter' },
+      specs: [
+        { label: 'Data rate', value: 'Up to 6,400 MT/s' },
+        { label: 'Capacity', value: '16–128 GB' },
+        { label: 'Form', value: 'RDIMM' },
+      ],
+      bom: null,
+      supply: { foundry_fab: ['micron'], materials: ['sumco'], equipment: ['lam-research'], packaging_osat: ['amkor'], test: ['amkor'] },
+      rels: [],
+      sources: ['est'],
+    },
+  ];
+
+  TERMS = {
+    hbm: { term: 'High-Bandwidth Memory', acronym: 'HBM', aliases: ['HBM','High-Bandwidth Memory','HBM3E'], category: 'component',
+      l1: 'Stacks of memory chips wired straight through with vertical channels and mounted right next to the processor, so data barely has to travel.',
+      analogy: 'A parking garage instead of a parking lot — same cars, far less walking.',
+      l2: 'AI chips are starved for memory bandwidth. HBM solves it by stacking DRAM dies and connecting them with through-silicon vias (TSVs), then placing the stack on an interposer millimetres from the compute die. Short wires mean enormous bandwidth at lower energy per bit.',
+      l3: 'An HBM3E stack is 8–12 DRAM dies over a base logic die with a 1024-bit interface and ~1.2 TB/s per stack at ~9.6 Gbps/pin. Stacks are bonded with TSVs and integrated via 2.5D packaging (CoWoS). Supply is split across SK Hynix, Samsung and Micron.',
+      why: 'HBM plus advanced packaging now dominate the cost of an AI accelerator, and stacking yield and CoWoS capacity are the industry’s tightest chokepoints.',
+      relations: [{ type: 'part_of', target: 'cowos' }, { type: 'see_also', target: 'tsv' }, { type: 'see_also', target: 'interposer' }, { type: 'narrower', target: 'bandwidth' }],
+      entities: ['skhynix','samsung','micron'], products: ['skhynix-hbm3e-8hi','nvidia-b200'], sources: ['src-004','src-002'] },
+    tsv: { term: 'Through-Silicon Via', acronym: 'TSV', aliases: ['TSV','TSVs','through-silicon via'], category: 'concept',
+      l1: 'A vertical electrical tunnel drilled straight through a silicon chip so stacked chips can talk top-to-bottom instead of around the edge.',
+      analogy: 'An elevator inside a building instead of an outdoor staircase.',
+      l2: 'TSVs replace long edge wiring with short vertical copper columns etched through the die, enabling dense 3D stacks like HBM with huge bandwidth and low energy per bit.',
+      l3: 'High-aspect-ratio vias are etched, lined and copper-filled, then revealed by wafer thinning. TSV pitch and yield set the practical limit on how tall a stack can be.',
+      why: 'TSV yield is a key constraint on how tall HBM stacks can go, directly capping memory capacity per accelerator.',
+      relations: [{ type: 'part_of', target: 'hbm' }, { type: 'see_also', target: 'interposer' }], entities: ['skhynix'], products: ['skhynix-hbm3e-8hi'], sources: ['src-004'] },
+    interposer: { term: 'Silicon Interposer', acronym: '', aliases: ['interposer','silicon interposer'], category: 'component',
+      l1: 'A thin slab of silicon that sits under the processor and memory and carries thousands of fine wires between them.',
+      analogy: 'A switchboard that lets neighbours talk through dense, short wiring instead of long cables.',
+      l2: 'In 2.5D packaging the compute die and HBM stacks both sit on an interposer whose ultra-fine wiring provides the thousands of connections HBM’s wide interface needs.',
+      l3: 'Silicon interposers use damascene wiring and microbumps; reticle-size limits drive CoWoS-L and stitched, large-format approaches for multi-die accelerators.',
+      why: 'Interposer size and supply (tied to CoWoS) gate how much compute and memory can share one package.',
+      relations: [{ type: 'part_of', target: 'cowos' }, { type: 'see_also', target: 'tsv' }], entities: ['tsmc'], products: ['nvidia-b200'], sources: ['src-003'] },
+    cowos: { term: 'Chip-on-Wafer-on-Substrate', acronym: 'CoWoS', aliases: ['CoWoS','CoWoS-L','CoWoS-S'], category: 'process',
+      l1: 'TSMC’s way of placing a processor and its memory side by side on one silicon base, then onto a package — so they behave like a single giant chip.',
+      analogy: 'Building several rooms on one shared foundation instead of separate houses.',
+      l2: 'CoWoS is 2.5D advanced packaging: dies are mounted on a silicon interposer (chip-on-wafer), which is then attached to a package substrate (on-substrate). It’s how HBM gets close to compute.',
+      l3: 'Variants (CoWoS-S / -L / -R) trade interposer type and reticle limits. Capacity is dominated by TSMC and is the tightest bottleneck in AI-accelerator supply.',
+      why: 'CoWoS capacity is widely cited as the single biggest limiter on AI-accelerator output industry-wide.',
+      relations: [{ type: 'see_also', target: 'interposer' }, { type: 'see_also', target: 'chiplet' }], entities: ['tsmc','ase','amkor'], products: ['nvidia-b200','amd-mi300x'],
+      process: { stage: 'packaging_osat', steps: ['Build the silicon interposer with fine wiring','Place the compute die and HBM stacks on the interposer (chip-on-wafer)','Attach the assembly to a package substrate (on-substrate)','Test the integrated module'], equipment: ['besi','asmpt'], materials: ['ibiden','unimicron','shinko'] }, sources: ['src-003'] },
+    photolithography: { term: 'Photolithography', acronym: '', aliases: ['photolithography','lithography','litho'], category: 'process',
+      l1: 'Printing a chip’s circuit pattern onto a wafer using light — like a stencil for incredibly tiny shapes.',
+      analogy: 'A photographic stencil: shine light through a mask to print the pattern.',
+      l2: 'A wafer is coated with light-sensitive resist, exposed through a patterned mask, and developed; the pattern then guides etching and deposition. It repeats for every layer.',
+      l3: 'Resolution scales with wavelength and numerical aperture; DUV (193nm immersion) and EUV (13.5nm) define the leading edge, with multi-patterning extending DUV.',
+      why: 'Lithography is the throughput and capability gate of the whole fab, and EUV tools come from a single supplier.',
+      relations: [{ type: 'narrower', target: 'euv' }, { type: 'narrower', target: 'duv' }, { type: 'part_of', target: 'foundry_fab' }], entities: ['asml'],
+      process: { stage: 'foundry_fab', steps: ['Coat the wafer with photoresist','Expose it through a patterned mask','Develop away the resist to reveal the pattern','Transfer the pattern by etching and deposition'], equipment: ['asml','tokyo-electron'], materials: ['jsr','tokyo-ohka','hoya'] }, sources: ['est'] },
+    euv: { term: 'Extreme Ultraviolet Lithography', acronym: 'EUV', aliases: ['EUV','EUVL','Extreme Ultraviolet'], category: 'process',
+      l1: 'A way of printing chip patterns using extremely short-wavelength light, fine enough to draw the tiniest modern features.',
+      analogy: 'Switching from a fat marker to a needle-fine pen to write smaller.',
+      l2: 'EUV uses 13.5nm light made from tin plasma, reflected through mirrors in a vacuum, to pattern leading-edge layers that older DUV light can’t resolve in a single pass.',
+      l3: 'Light is generated from laser-pulsed tin droplets, collected by multilayer mirrors and projected at ~0.33 NA; High-NA (0.55) extends resolution further. ASML is the sole tool maker.',
+      why: 'EUV is the chokepoint of advanced logic: one supplier (ASML), enormous tool cost, and national export controls built around it.',
+      relations: [{ type: 'broader', target: 'photolithography' }, { type: 'see_also', target: 'high-na-euv' }, { type: 'part_of', target: 'foundry_fab' }], entities: ['asml'],
+      process: { stage: 'foundry_fab', steps: ['A laser vaporises tin droplets into plasma','The plasma emits 13.5nm EUV light','Mirrors focus the light through a vacuum','The pattern is projected onto the resist-coated wafer'], equipment: ['asml'], materials: ['hoya','jsr','tokyo-ohka'] }, sources: ['est'] },
+    'high-na-euv': { term: 'High-NA EUV', acronym: '', aliases: ['High-NA EUV','High-NA'], category: 'process',
+      l1: 'A next-generation EUV machine with bigger optics that prints even finer features in a single pass.',
+      analogy: 'A sharper lens on the same camera — more detail without changing the light.',
+      l2: 'High-NA raises the numerical aperture from 0.33 to 0.55, improving resolution so chipmakers can avoid some costly multi-patterning at the most advanced nodes.',
+      l3: 'High-NA uses anamorphic optics and half-field exposure, changing mask and reticle strategy; early tools are extremely expensive and adoption is gradual.',
+      why: 'High-NA extends scaling but deepens dependence on a single toolmaker and raises the cost of entry to the leading edge.',
+      relations: [{ type: 'broader', target: 'euv' }, { type: 'part_of', target: 'foundry_fab' }], entities: ['asml'], sources: ['est'] },
+    duv: { term: 'Deep Ultraviolet Lithography', acronym: 'DUV', aliases: ['DUV','Deep Ultraviolet'], category: 'process',
+      l1: 'The older, workhorse light used to print most chip layers — still essential for everything but the very finest features.',
+      analogy: 'A reliable ballpoint pen: not the finest, but it does most of the writing.',
+      l2: 'DUV uses 193nm light (often immersion) and, with multi-patterning, can still reach advanced nodes — at the cost of more steps than EUV.',
+      l3: '193nm immersion scanners plus self-aligned multi-patterning extend pitch below the single-exposure limit; DUV remains the volume backbone of global output.',
+      why: 'DUV underpins the vast majority of global chip output, so access to it shapes mature-node supply and policy debates.',
+      relations: [{ type: 'broader', target: 'photolithography' }, { type: 'see_also', target: 'euv' }], entities: ['asml'], sources: ['est'] },
+    chiplet: { term: 'Chiplet', acronym: '', aliases: ['chiplet','chiplets'], category: 'concept',
+      l1: 'Building a big processor out of several smaller chips wired tightly together, instead of one giant chip.',
+      analogy: 'Lego bricks instead of carving one solid block.',
+      l2: 'Splitting a design into chiplets improves yield and lets each piece use the best-fit process node; they’re joined by advanced packaging and fast die-to-die links.',
+      l3: 'Standards like UCIe and links such as Infinity Fabric or EMIB connect chiplets; partitioning trades packaging complexity for silicon yield and flexibility.',
+      why: 'Chiplets are how modern accelerators and server CPUs scale past reticle limits — shifting value toward packaging.',
+      relations: [{ type: 'see_also', target: 'cowos' }, { type: 'see_also', target: 'interposer' }], products: ['amd-mi300x','amd-epyc-turin'], sources: ['src-002'] },
+    finfet: { term: 'FinFET', acronym: '', aliases: ['FinFET','FinFETs'], category: 'concept',
+      l1: 'A transistor design where the channel stands up like a fin, giving the switch better control and less leakage.',
+      analogy: 'Gripping a hose from three sides instead of one to shut it cleanly.',
+      l2: 'Raising the channel into a fin lets the gate wrap it on multiple sides, controlling current far better than flat (planar) transistors as features shrink.',
+      l3: 'FinFETs dominated roughly 16nm–3nm; as scaling continued, gate-control limits drove the move to gate-all-around nanosheets.',
+      why: 'The transistor architecture sets how small and efficient a node can go — and when the industry must retool to the next structure.',
+      relations: [{ type: 'see_also', target: 'gaa-nanosheet' }], sources: ['est'] },
+    'gaa-nanosheet': { term: 'Gate-All-Around (Nanosheet)', acronym: 'GAA', aliases: ['GAA','gate-all-around','nanosheet'], category: 'concept',
+      l1: 'The newest transistor shape, where the gate fully surrounds stacked sheets of channel for the tightest control yet.',
+      analogy: 'Wrapping your whole hand around the hose instead of three fingers.',
+      l2: 'GAA stacks horizontal nanosheets that the gate wraps completely, improving drive and leakage at 2nm-class nodes where FinFETs run out of room.',
+      l3: 'Nanosheet width tuning trades drive against area; CFET (vertically stacked complementary devices) is the proposed successor beyond GAA.',
+      why: 'GAA marks the current leading-edge transition, reshaping who can compete at 2nm and below.',
+      relations: [{ type: 'see_also', target: 'finfet' }], sources: ['est'] },
+    bandwidth: { term: 'Memory Bandwidth', acronym: '', aliases: ['memory bandwidth','bandwidth'], category: 'metric',
+      l1: 'How much data can move between memory and the processor each second — the lifeblood of AI performance.',
+      analogy: 'The number of lanes on a highway: more lanes, more cars per second.',
+      l2: 'AI accelerators are often bandwidth-bound — compute sits idle waiting for data. HBM exists specifically to widen this pipe with thousands of parallel connections.',
+      l3: 'Bandwidth equals interface width times data rate; HBM3E delivers ~1.2 TB/s per stack via a 1024-bit interface at ~9.6 Gbps/pin.',
+      why: 'Bandwidth, not raw FLOPS, is frequently the real limiter on large-model training and inference throughput.',
+      relations: [{ type: 'see_also', target: 'hbm' }], products: ['skhynix-hbm3e-8hi'], sources: ['src-004'] },
+    wafer: { term: 'Silicon Wafer', acronym: '', aliases: ['silicon wafer','wafers','wafer'], category: 'material',
+      l1: 'The thin, polished disc of ultra-pure silicon that every chip is built on.',
+      analogy: 'A blank canvas the whole painting is created on.',
+      l2: 'Wafers are sliced from a single grown silicon crystal and polished mirror-flat; hundreds of identical chips are fabricated across one wafer at once.',
+      l3: 'The common diameter is 300mm; purity, flatness and defect density directly affect yield. Specialty substrates (SOI, SiC, GaN) serve specific device types.',
+      why: 'A handful of suppliers dominate high-purity wafers, making them a quiet but critical supply-chain chokepoint.',
+      relations: [{ type: 'part_of', target: 'foundry_fab' }], entities: ['shin-etsu','sumco'], sources: ['est'] },
+    foundry: { term: 'Foundry', acronym: '', aliases: ['foundry','foundries'], category: 'org_type',
+      l1: 'A factory company that manufactures chips designed by others — you bring the blueprint, they build the silicon.',
+      analogy: 'A commercial kitchen that cooks recipes other brands create.',
+      l2: 'Pure-play foundries (like TSMC) let "fabless" design firms build cutting-edge chips without owning a multi-billion-dollar fab, concentrating manufacturing in a few hands.',
+      l3: 'Foundries provide PDKs, process nodes and packaging; leading-edge capacity is concentrated in TSMC, Samsung and Intel Foundry.',
+      why: 'Leading-edge foundry capacity is geographically concentrated, making it central to both AI supply and geopolitics.',
+      relations: [{ type: 'see_also', target: 'chiplet' }, { type: 'part_of', target: 'foundry_fab' }], entities: ['tsmc','samsung','intel-foundry'], sources: ['est'] },
+    'specialty-gases': { term: 'Specialty Gases', acronym: '', aliases: ['specialty gases','electronic gases','process gases'], category: 'material',
+      l1: 'Ultra-pure gases piped into the fab to grow, etch and clean each chip layer — purity measured in parts per billion.',
+      analogy: 'The clean, exact ingredients a kitchen needs — except contamination is counted in single stray atoms.',
+      l2: 'Deposition and etch steps rely on precise specialty and bulk gases (nitrogen, argon, plus fluorinated and silicon-bearing species). Tiny impurities ruin yield, so supply and on-site generation are tightly controlled.',
+      l3: 'Gas firms often build plants on the fab site; some etch gases and rare gases like neon (for lithography lasers) have become supply-chain flashpoints.',
+      why: 'A few industrial-gas firms underpin every fab, and a gas supply shock — neon, for example — can ripple straight into chip output.',
+      relations: [{ type: 'part_of', target: 'foundry_fab' }, { type: 'see_also', target: 'photolithography' }], entities: ['air-liquide','linde'], sources: ['est'] },
+    upw: { term: 'Ultra-Pure Water', acronym: 'UPW', aliases: ['ultra-pure water','UPW'], category: 'material',
+      l1: 'Water cleaned far beyond drinking standard, used to rinse wafers between steps so nothing is left behind.',
+      analogy: 'Distilled water seems clean; UPW is hundreds of times cleaner still — almost nothing but H₂O.',
+      l2: 'A single fab can use millions of litres of ultra-pure water a day to rinse wafers, with dedicated treatment plants stripping out ions, particles and microbes to extreme tolerances.',
+      l3: 'UPW systems chain multi-stage filtration, reverse osmosis, deionisation and UV; water reuse and discharge management are growing operational and regulatory concerns.',
+      why: 'Fabs are among the most water- and energy-intensive facilities on earth, making utilities and their operators essential — and politically sensitive — partners.',
+      relations: [{ type: 'part_of', target: 'foundry_fab' }], entities: ['ovivo','kurita'], sources: ['est'] },
+  };
+
+  PRODUCT_BRIEF = {
+    'nvidia-b200': {
+      l1: 'NVIDIA’s flagship AI accelerator — two large compute dies plus eight HBM3E memory stacks packaged together to act as one enormous chip.',
+      analogy: 'A racing engine bolted directly to its fuel tanks so nothing starves it.',
+      l2: 'B200 pairs dual reticle-sized dies with 192 GB of HBM3E on a CoWoS package. The memory sits millimetres from compute so the chip isn’t starved for bandwidth during training.',
+      l3: 'Built on TSMC 4NP (~208B transistors), with ~8 TB/s memory bandwidth, NVLink 5 and a 1,000W TDP in SXM form factor. HBM and advanced packaging dominate its build cost.',
+      why: 'The B200 is the reference design the entire AI-hardware supply chain is racing to feed — its HBM and CoWoS demand set the market.',
+      keyTerms: ['hbm','cowos','chiplet','finfet','bandwidth'] },
+    'skhynix-hbm3e-8hi': {
+      l1: 'A single stack of eight DRAM chips wired vertically and built to sit right beside an AI processor, feeding it data at huge speed.',
+      analogy: 'A parking garage instead of a parking lot — same cars, far less walking.',
+      l2: 'This 8-high HBM3E stack delivers 24 GB and ~1.2 TB/s over a 1024-bit interface. Through-silicon vias connect the dies; the stack mounts on the accelerator’s interposer.',
+      l3: 'Built on 1b-nm DRAM, 8-Hi over a base logic die at ~9.6 Gbps/pin. SK Hynix leads HBM share, and stacking yield is a tight constraint.',
+      why: 'HBM is the highest-value component in an AI accelerator after the logic die, and SK Hynix’s lead makes it a strategic supplier.',
+      keyTerms: ['hbm','tsv','interposer','bandwidth'] },
+    'amd-mi300x': {
+      l1: 'AMD’s data-center AI accelerator, built from many smaller chiplets plus HBM, all fused together in one package.',
+      analogy: 'A team of specialists working shoulder to shoulder instead of one overworked generalist.',
+      l2: 'MI300X combines eight compute chiplets and four I/O dies with 192 GB of HBM3 using CoWoS and 3D stacking — a chiplet-heavy answer to the B200.',
+      l3: 'TSMC N5/N6 chiplets, ~153B transistors, ~5.3 TB/s bandwidth, 750W. Heavy use of advanced packaging defines its cost structure.',
+      why: 'MI300X is the main credible challenger to NVIDIA in AI training, so its supply chain matters to market competition.',
+      keyTerms: ['chiplet','hbm','cowos','interposer'] },
+  };
+
+  LEARN = [
+    { n: 1, title: 'Design the chip', l1: 'Engineers describe the chip in code and arrange billions of transistors using EDA software and licensed IP blocks.', l2: 'Design houses — often "fabless" — use tools from Synopsys and Cadence and IP from Arm, then hand a finished layout to a foundry.', why: 'A handful of EDA and IP firms sit at the start of every chip.', node: { kind: 'stage', key: 'design_ip_eda' }, linkLabel: 'See the Design & EDA stage' },
+    { n: 2, title: 'Start with a wafer', l1: 'Manufacturing begins with a polished disc of ultra-pure silicon called a wafer.', l2: 'Wafers are sliced from a grown silicon crystal; hundreds of chips are built across one wafer at once.', why: 'A few suppliers dominate high-purity wafers worldwide.', node: { kind: 'term', id: 'wafer' }, linkLabel: 'Learn: silicon wafer' },
+    { n: 3, title: 'Print the pattern', l1: 'Light prints the circuit pattern onto the wafer — the finest features use EUV.', l2: 'Photolithography exposes light-sensitive resist through a mask; leading-edge layers need 13.5nm EUV light from ASML.', why: 'EUV is a single-supplier chokepoint at the heart of advanced chips.', node: { kind: 'term', id: 'euv' }, linkLabel: 'Learn: EUV lithography' },
+    { n: 4, title: 'Build the layers', l1: 'The chip is built up layer by layer through repeated depositing, patterning and etching.', l2: 'Hundreds of steps in the front-end fab stack and shape materials to form transistors and wiring.', why: 'Front-end fabs cost tens of billions and run for years.', node: { kind: 'stage', key: 'foundry_fab' }, linkLabel: 'See the Foundry stage' },
+    { n: 5, title: 'Test the wafer', l1: 'Each chip on the wafer is electrically tested before anything is cut or packaged.', l2: 'Wafer sort screens out defective dies early so only good ones move forward.', why: 'Catching failures here saves expensive packaging later.', node: { kind: 'stage', key: 'test' }, linkLabel: 'See the Test stage' },
+    { n: 6, title: 'Stack the memory', l1: 'Memory chips are stacked into HBM so the processor never runs short of data.', l2: 'HBM stacks 8–12 DRAM dies connected by through-silicon vias for enormous bandwidth.', why: 'HBM is now one of the costliest, most supply-constrained parts.', node: { kind: 'term', id: 'hbm' }, linkLabel: 'Learn: HBM' },
+    { n: 7, title: 'Package it together', l1: 'The processor and its HBM are mounted side by side on one silicon base — CoWoS.', l2: 'Advanced 2.5D packaging places dies on an interposer so they behave like one giant chip.', why: 'CoWoS capacity is the tightest bottleneck in AI-chip supply.', node: { kind: 'term', id: 'cowos' }, linkLabel: 'Learn: CoWoS packaging' },
+    { n: 8, title: 'Final test', l1: 'The finished package is tested again — and sometimes burned-in — before it ships.', l2: 'Final and system-level test verify the assembled module under real operating conditions.', why: 'It’s the last gate before a costly part reaches a customer.', node: { kind: 'stage', key: 'test' }, linkLabel: 'See the Test stage' },
+    { n: 9, title: 'Into the rack', l1: 'Verified accelerators like the B200 are assembled into servers and racks for data centers.', l2: 'Many accelerators plus CPUs, networking and memory combine into the systems that train AI models.', why: 'This is where all the upstream supply chains finally converge.', node: { kind: 'product', id: 'nvidia-b200' }, linkLabel: 'See the NVIDIA B200' },
+  ];
+
+  ensureAlias() {
+    if (this._aliasList) return;
+    const list = [];
+    Object.keys(this.TERMS).forEach(id => {
+      const t = this.TERMS[id];
+      const set = new Set([t.term, ...(t.aliases || [])]);
+      set.forEach(a => { if (a) list.push({ alias: a, id }); });
+    });
+    list.sort((a, b) => b.alias.length - a.alias.length);
+    this._aliasList = list;
+  }
+  termSpan(seg, id, key) {
+    return React.createElement('span', {
+      key: 't' + key,
+      onMouseEnter: (e) => this.openPop(id, e),
+      onMouseLeave: () => this.scheduleClose(),
+      onClick: (e) => this.openPop(id, e),
+      style: { borderBottom: '1px dashed #c0996a', color: '#8a5a2b', cursor: 'pointer' },
+    }, seg);
+  }
+  linkify(text, used) {
+    if (!text) return text;
+    this.ensureAlias();
+    const u = used || new Set();
+    const out = []; let i = 0, k = 0;
+    const isW = (c) => /[A-Za-z0-9]/.test(c || '');
+    while (i < text.length) {
+      let m = null;
+      for (const a of this._aliasList) {
+        if (u.has(a.id)) continue;
+        const seg = text.substr(i, a.alias.length);
+        if (seg.toLowerCase() !== a.alias.toLowerCase()) continue;
+        if (isW(text[i - 1])) continue;
+        if (isW(text[i + a.alias.length])) continue;
+        m = a; break;
+      }
+      if (m) { u.add(m.id); out.push(this.termSpan(text.substr(i, m.alias.length), m.id, k++)); i += m.alias.length; }
+      else { if (typeof out[out.length - 1] === 'string') out[out.length - 1] += text[i]; else out.push(text[i]); i++; }
+    }
+    return out;
+  }
+  openPop(id, e) {
+    if (this._closeT) { clearTimeout(this._closeT); this._closeT = null; }
+    const w = (typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const x = Math.max(12, Math.min((e && e.clientX) || 120, w - 300));
+    const y = ((e && e.clientY) || 120) + 16;
+    this.setState({ pop: { open: true, id, x, y } });
+  }
+  scheduleClose() {
+    if (this._closeT) clearTimeout(this._closeT);
+    this._closeT = setTimeout(() => { this.setState(s => ({ pop: { ...s.pop, open: false } })); }, 160);
+  }
+  cancelClose() { if (this._closeT) { clearTimeout(this._closeT); this._closeT = null; } }
+  goTerm(id) { window.scrollTo(0, 0); this.setState({ screen: 'term', selectedTermId: id, pop: { open: false } }); }
+  resolveNode(target) {
+    if (this.TERMS[target]) return { kind: 'term', name: this.TERMS[target].term, onClick: () => this.goTerm(target) };
+    if (this.SUP[target]) return { kind: 'supplier', name: this.SUP[target].name, onClick: () => this.goSupplierDetail(target) };
+    if (this.prod(target)) return { kind: 'product', name: this.prod(target).name, onClick: () => this.goProductDetail(target) };
+    const st = this.STAGES.find(s => s.key === target);
+    if (st) return { kind: 'stage', name: st.label, onClick: () => this.go('valuechain') };
+    return { kind: 'concept', name: target, onClick: null };
+  }
+  relLabel(t) { return ({ broader: 'broader', narrower: 'narrower', part_of: 'part of', see_also: 'see also', uses: 'uses', used_by: 'used by', made_by: 'made by', competes_with: 'competes with', succeeds: 'succeeds', key_concept: 'key concept' })[t] || t; }
+  kindMeta(kind) { return ({ term: { label: 'Concept', bg: '#eceef5', fg: '#475569' }, concept: { label: 'Concept', bg: '#eceef5', fg: '#475569' }, supplier: { label: 'Supplier', bg: '#e7f0ef', fg: '#2c6360' }, product: { label: 'Product', bg: '#f3ece2', fg: '#8a5a2b' }, stage: { label: 'Stage', bg: '#f1f0ec', fg: '#6b6557' } })[kind] || { label: '', bg: '#f1f0ec', fg: '#6b6557' }; }
+  connectItem(target, relType) { const n = this.resolveNode(target); const km = this.kindMeta(n.kind); return { rel: this.relLabel(relType), name: n.name, onClick: n.onClick, kindLabel: km.label, kBg: km.bg, kFg: km.fg }; }
+  termConnects(t) {
+    const out = [];
+    (t.relations || []).forEach(r => out.push(this.connectItem(r.target, r.type)));
+    (t.entities || []).forEach(id => out.push(this.connectItem(id, 'made_by')));
+    (t.products || []).forEach(id => out.push(this.connectItem(id, 'used_by')));
+    return out;
+  }
+  buildBrief(p) {
+    const b = this.PRODUCT_BRIEF[p.id];
+    const raw = [];
+    if (b && b.keyTerms) b.keyTerms.forEach(id => raw.push(this.connectItem(id, 'key_concept')));
+    (p.rels || []).forEach(r => raw.push(this.connectItem(r.target, r.type)));
+    ((p.supply && p.supply.foundry_fab) || []).forEach(id => raw.push(this.connectItem(id, 'made_by')));
+    const seen = new Set(); const connects = raw.filter(c => { if (seen.has(c.name)) return false; seen.add(c.name); return true; });
+    if (!b) return { hasBrief: false, hasAnalogy: false, showL2: false, showL3: false, hasWhy: false, hasConnects: connects.length > 0, connects };
+    return {
+      hasBrief: true, briefNode: this.linkify(b.l1, new Set()), hasAnalogy: !!b.analogy, analogy: b.analogy || '',
+      showL2: !!b.l2, l2Node: b.l2 ? this.linkify(b.l2, new Set()) : '',
+      showL3: !!b.l3, l3Node: b.l3 ? this.linkify(b.l3, new Set()) : '',
+      hasWhy: !!b.why, whyNode: b.why ? this.linkify(b.why, new Set()) : '',
+      hasConnects: connects.length > 0, connects,
+    };
+  }
+
+  go(screen) { window.scrollTo(0, 0); this.setState({ screen }); }
+  goProductDetail(id) { window.scrollTo(0, 0); this.setState({ screen: 'product', selectedProductId: id }); }
+  goSupplierDetail(id) { window.scrollTo(0, 0); this.setState({ screen: 'supplier', selectedSupplierId: id }); }
+  goProductsFromTax(domKey, subKey) { window.scrollTo(0, 0); this.setState({ screen: 'products', productDomain: domKey, productSub: subKey || null }); }
+  goProductsDomain(domKey) { window.scrollTo(0, 0); this.setState({ screen: 'products', productDomain: domKey, productSub: null }); }
+  goProductsFacetNav(key, val) { window.scrollTo(0, 0); this.setState(s => ({ screen: 'products', productDomain: 'all', productSub: null, productQuery: '', facets: { ...s.facets, [key]: val } })); }
+  goMapFocus(domKey) { window.scrollTo(0, 0); this.setState({ screen: 'products', productDomain: domKey, productSub: null, productQuery: '' }); }
+  goSupStage(stage) { window.scrollTo(0, 0); this.setState({ screen: 'suppliers', supplierStage: stage }); }
+
+  sName(id) { return (this.SUP[id] || {}).name || id; }
+  stageLabel(key) { const s = this.STAGES.find(x => x.key === key); return s ? s.label : key; }
+  domColor(d) { return (this.DOMAINS[d] || {}).color || '#8a8579'; }
+  fmt(n) { return '$' + Number(n).toLocaleString(); }
+  prod(id) { return this.PRODUCTS.find(p => p.id === id); }
+  countSub(domKey, subKey) { return this.PRODUCTS.filter(p => p.domain === domKey && p.sub === subKey).length; }
+  setFacet(key, val) { this.setState(s => ({ facets: { ...s.facets, [key]: val } })); }
+  clearAllFilters() { this.setState({ productQuery: '', productDomain: 'all', productArch: 'all', productSub: null, facets: { status: 'all', company_type: 'all', packaging: 'all', node_maturity: 'all', transistor_arch: 'all', material_system: 'all', integration_level: 'all', end_market: 'all' } }); }
+  goProductsArch(archKey) { window.scrollTo(0, 0); this.setState({ screen: 'products', productArch: archKey, productDomain: 'all', productSub: null, productQuery: '' }); }
+
+  annular(cx, cy, r0, r1, a0, a1) {
+    const p = (r, a) => [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+    const large = (a1 - a0) > Math.PI ? 1 : 0;
+    const [x0, y0] = p(r1, a0), [x1, y1] = p(r1, a1), [x2, y2] = p(r0, a1), [x3, y3] = p(r0, a0);
+    return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r1} ${r1} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} L${x2.toFixed(2)} ${y2.toFixed(2)} A${r0} ${r0} 0 ${large} 0 ${x3.toFixed(2)} ${y3.toFixed(2)} Z`;
+  }
+
+  buildSunburst() {
+    const cx = 220, cy = 220, dR0 = 58, dR1 = 116, sR0 = 119, sR1 = 192, labelR = 204;
+    const TAU = Math.PI * 2;
+    const doms = this.DOMAIN_LIST;
+    const totalW = doms.reduce((a, k) => a + Math.max(this.DOMAINS[k].subs.length, 1), 0);
+    let ang = -Math.PI / 2;
+    const domainArcs = [], subArcs = [], labels = [];
+    doms.forEach(k => {
+      const dom = this.DOMAINS[k];
+      const now = dom.phase === 'now';
+      const w = Math.max(dom.subs.length, 1) / totalW * TAU;
+      const a0 = ang, a1 = ang + w, mid = (a0 + a1) / 2;
+      domainArcs.push({ d: this.annular(cx, cy, dR0, dR1, a0, a1), fill: now ? dom.color : '#dcd6cb', onClick: () => this.setState({ mapFocus: k }) });
+      const lx = cx + labelR * Math.cos(mid), ly = cy + labelR * Math.sin(mid) + 3;
+      const c = Math.cos(mid);
+      const anchor = c > 0.25 ? 'start' : (c < -0.25 ? 'end' : 'middle');
+      labels.push({ x: lx.toFixed(1), y: ly.toFixed(1), text: dom.label, anchor, fill: now ? '#3f3b34' : '#b3ada0', onClick: () => this.setState({ mapFocus: k }) });
+      const sw = w / dom.subs.length;
+      dom.subs.forEach((s, i) => {
+        const sa0 = a0 + i * sw, sa1 = a0 + (i + 1) * sw;
+        const cnt = this.countSub(k, s.key);
+        const op = now ? (cnt > 0 ? 0.55 + Math.min(i, 5) * 0.07 : 0.26) : 0.5;
+        subArcs.push({
+          d: this.annular(cx, cy, sR0, sR1, sa0, sa1),
+          fill: now ? dom.color : '#cdc7bb', op,
+          cursor: (now && cnt > 0) ? 'pointer' : 'default',
+          onClick: (now && cnt > 0) ? () => this.goProductsFromTax(k, s.key) : null,
+        });
+      });
+      ang = a1;
+    });
+    return { domainArcs, subArcs, labels };
+  }
+
+  renderVals() {
+    const { screen } = this.state;
+    const activeKey = screen === 'product' ? 'products' : screen === 'supplier' ? 'suppliers' : (screen === 'term' ? 'glossary' : screen);
+    const catLabel = { concept: 'Concepts', process: 'Processes', component: 'Components', material: 'Materials', metric: 'Metrics', org_type: 'Organisation types' };
+
+    // ---- Glossary ----
+    const gOrder = ['concept', 'process', 'component', 'material', 'metric', 'org_type'];
+    const glossaryGroups = gOrder.map(cat => {
+      const terms = Object.keys(this.TERMS).filter(id => this.TERMS[id].category === cat)
+        .sort((a, b) => this.TERMS[a].term.localeCompare(this.TERMS[b].term))
+        .map(id => { const tt = this.TERMS[id]; const s = tt.l1 || ''; return { term: tt.term, hasAcronym: !!tt.acronym, acronym: tt.acronym || '', l1short: s.length > 104 ? s.slice(0, 102) + '…' : s, isProcess: !!tt.process, onClick: () => this.goTerm(id) }; });
+      return { label: catLabel[cat] || cat, terms };
+    }).filter(g => g.terms.length);
+
+    // ---- Term / Process page ----
+    const tid = this.state.selectedTermId || 'hbm';
+    const t = this.TERMS[tid] || this.TERMS.hbm;
+    const procGroups = [];
+    if (t.process) {
+      const eq = (t.process.equipment || []).map(id => ({ name: this.sName(id), onClick: () => this.goSupplierDetail(id) }));
+      const ma = (t.process.materials || []).map(id => ({ name: this.sName(id), onClick: () => this.goSupplierDetail(id) }));
+      if (eq.length) procGroups.push({ title: 'Equipment', suppliers: eq });
+      if (ma.length) procGroups.push({ title: 'Materials', suppliers: ma });
+    }
+    const aliasArr = (t.aliases || []).filter(a => a !== t.term && a !== t.acronym);
+    const ct = {
+      term: t.term, acronym: t.acronym || '', hasAcronym: !!t.acronym,
+      aliasLine: aliasArr.join('  ·  '), hasAliases: aliasArr.length > 0,
+      categoryLabel: catLabel[t.category] || t.category, isProcess: !!t.process,
+      l1Node: this.linkify(t.l1, new Set([tid])), analogy: t.analogy || '', hasAnalogy: !!t.analogy,
+      showL2: !!t.l2, l2Node: t.l2 ? this.linkify(t.l2, new Set([tid])) : '',
+      showL3: !!t.l3, l3Node: t.l3 ? this.linkify(t.l3, new Set([tid])) : '',
+      hasWhy: !!t.why, whyNode: t.why ? this.linkify(t.why, new Set([tid])) : '',
+      steps: t.process ? t.process.steps.map((s, i) => ({ n: i + 1, text: s })) : [], hasProc: !!t.process,
+      procGroups, stageName: t.process ? this.stageLabel(t.process.stage) : '', hasStage: !!(t.process && t.process.stage),
+      onStage: () => this.go('valuechain'),
+      connects: this.termConnects(t), hasConnects: this.termConnects(t).length > 0,
+      sources: (t.sources || []).map(id => ({ id, title: (this.SRC[id] || {}).title || id, meta: (this.SRC[id] || {}).meta || '' })),
+      hasLevelHint: false, levelHint: '',
+    };
+
+    // ---- Learning path ----
+    const nodeClick = (node) => { if (!node) return () => {}; if (node.kind === 'term') return () => this.goTerm(node.id); if (node.kind === 'product') return () => this.goProductDetail(node.id); if (node.kind === 'stage') return () => this.go('valuechain'); return () => {}; };
+    const learnSteps = this.LEARN.map(s => ({ n: String(s.n).padStart(2, '0'), title: s.title, l1: s.l1, showL2: !!s.l2, l2: s.l2 || '', why: s.why, linkLabel: s.linkLabel, onClick: nodeClick(s.node), notLast: s.n !== this.LEARN.length }));
+
+    // ---- Popover ----
+    const pp = this.state.pop || { open: false }; const ptm = pp.id ? this.TERMS[pp.id] : null;
+    const pop = { open: !!pp.open && !!ptm, x: pp.x || 120, y: pp.y || 120, term: ptm ? ptm.term : '', acronym: ptm ? (ptm.acronym || '') : '', hasAcronym: !!(ptm && ptm.acronym), l1: ptm ? ptm.l1 : '', analogy: ptm ? (ptm.analogy || '') : '', hasAnalogy: !!(ptm && ptm.analogy), cancel: () => this.cancelClose(), close: () => this.scheduleClose(), openFull: () => this.goTerm(pp.id) };
+    const navDef = [ { key: 'atlas', label: 'Home' }, { key: 'products', label: 'Products' }, { key: 'valuechain', label: 'Value Chain' }, { key: 'suppliers', label: 'Suppliers' }, { key: 'glossary', label: 'Glossary' } ];
+    const navItems = navDef.map(n => ({
+      label: n.label,
+      color: activeKey === n.key ? '#0f172a' : '#8a8579',
+      underline: activeKey === n.key ? '#0f172a' : 'transparent',
+      onClick: () => this.go(n.key),
+    }));
+
+    // ---- Home layers ----
+    const homeLayers = [
+      { n: '01', label: 'Infrastructure', tag: 'How it’s built', color: '#566273', cards: [
+        { title: 'Foundry & fabrication', desc: 'IDM vs pure-play models, fab capacity, and the physical process — deposition, litho, etch.', meta: 'Value chain', onClick: () => this.go('valuechain') },
+        { title: 'Materials & chemicals', desc: 'Silicon wafers, photoresist, specialty gases and ultra-pure water feeding every layer.', meta: 'Knowledge base', onClick: () => this.goTerm('specialty-gases') },
+        { title: 'Equipment (WFE)', desc: 'The machines that make it possible — ASML, Applied Materials, Tokyo Electron, KLA.', meta: 'Suppliers', onClick: () => this.goSupStage('equipment') },
+      ] },
+      { n: '02', label: 'Architecture', tag: 'How performance scales', color: '#8a5a2b', cards: [
+        { title: 'Advanced packaging', desc: 'Where 2026’s gains come from as Moore’s Law slows — CoWoS, fan-out, hybrid bonding.', meta: 'Concept', onClick: () => this.goTerm('cowos') },
+        { title: 'Heterogeneous integration', desc: 'Combining many dies into one — chiplets, 3D stacking and through-silicon vias.', meta: 'Concept', onClick: () => this.goTerm('chiplet') },
+        { title: 'Design & IP', desc: 'EDA software and architecture licensing — Synopsys, Cadence, Arm.', meta: 'Suppliers', onClick: () => this.goSupStage('design_ip_eda') },
+      ] },
+      { n: '03', label: 'Product', tag: 'What the silicon does', color: '#9a6b3f', cards: [
+        { title: 'Compute engines', desc: 'CPUs, GPUs, TPUs and AI accelerators — the logic doing the work.', meta: 'Logic products', onClick: () => this.goProductsDomain('logic') },
+        { title: 'Memory & HBM', desc: 'DRAM, NAND and the high-bandwidth memory feeding every AI accelerator.', meta: 'Memory products', onClick: () => this.goProductsDomain('memory') },
+        { title: 'Power & analog', desc: 'Silicon carbide and gallium nitride for EVs and high-power systems.', meta: 'Browse domain', onClick: () => this.goMapFocus('discretes') },
+        { title: 'Sensors & IoT', desc: 'MEMS, image sensors and edge devices at the network’s edge.', meta: 'Browse domain', onClick: () => this.goMapFocus('sensors') },
+      ] },
+      { n: '04', label: 'Application', tag: 'Where it ends up', color: '#3f7d7a', cards: [
+        { title: 'AI & data center', desc: 'The accelerators, CPUs and HBM that train and serve large models.', meta: 'Datacenter silicon', onClick: () => this.goProductsFacetNav('end_market', 'datacenter') },
+        { title: 'Automotive & EV', desc: 'Wide-bandgap power devices and the supply chain behind electrification.', meta: 'Browse domain', onClick: () => this.goMapFocus('discretes') },
+        { title: 'Consumer & edge', desc: 'Mobile SoCs, sensors and low-power silicon in everyday devices.', meta: 'Browse domain', onClick: () => this.goMapFocus('sensors') },
+      ] },
+    ];
+    const trending = [
+      { label: 'Edge AI', onClick: () => this.goMapFocus('sensors') },
+      { label: 'Power efficiency', onClick: () => this.goMapFocus('discretes') },
+      { label: 'HBM & packaging', onClick: () => this.goTerm('hbm') },
+    ];
+
+    // ---- Map ----
+    const sun = this.buildSunburst();
+    const focus = this.DOMAINS[this.state.mapFocus] || this.DOMAINS.logic;
+    const focusNow = focus.phase === 'now';
+    const mp = {
+      label: focus.label, color: focus.color, summary: focus.summary,
+      phaseLabel: focusNow ? 'Live now' : 'Scaffolded',
+      phaseBg: focusNow ? '#dcfce7' : '#f1f0ec', phaseFg: focusNow ? '#166534' : '#8a8579',
+      subs: focus.subs.map(s => {
+        const cnt = this.countSub(this.state.mapFocus, s.key);
+        const has = focusNow && cnt > 0;
+        return { label: s.label, cursor: has ? 'pointer' : 'default',
+          color: has ? '#1c1a17' : '#a8a294',
+          countLabel: cnt > 0 ? (cnt + (cnt === 1 ? ' product' : ' products')) : (focusNow ? 'none yet' : 'later'),
+          countColor: cnt > 0 ? '#3f3b34' : '#c4bdb0',
+          onClick: has ? () => this.goProductsFromTax(this.state.mapFocus, s.key) : null };
+      }),
+    };
+
+    // ---- Products ----
+    const q = this.state.productQuery.trim().toLowerCase();
+    const dom = this.state.productDomain;
+    const sub = this.state.productSub;
+    const fc = this.state.facets;
+    const archDef = this.ARCH_BUCKETS.find(a => a.key === this.state.productArch) || this.ARCH_BUCKETS[0];
+    const filtered = this.PRODUCTS.filter(p => {
+      if (archDef.subcats && !archDef.subcats.includes(p.subcat)) return false;
+      if (dom !== 'all' && p.domain !== dom) return false;
+      if (sub && p.sub !== sub) return false;
+      for (const f of this.FACET_DEFS) { if (fc[f.key] !== 'all' && f.get(p) !== fc[f.key]) return false; }
+      if (q && !(p.name + ' ' + p.vendor + ' ' + (p.family || '')).toLowerCase().includes(q)) return false;
+      return true;
+    });
+    const combinedRows = filtered.map(p => {
+      const st = this.STATUS[p.status] || this.STATUS.eol;
+      const mat = this.NODE_MAT[(p.attrs || {}).node_maturity] ? (p.attrs.node_maturity === 'leading_edge' ? 'Leading edge' : this.NODE_MAT[p.attrs.node_maturity].split(' (')[0]) : '';
+      return {
+        name: p.name, meta: p.vendor + ' · ' + (p.node || '—'), subcatLabel: this.SUBCAT[p.subcat] || p.subcat,
+        status: p.status, statusBg: st.bg, statusFg: st.fg, domainColor: this.domColor(p.domain),
+        onClick: () => this.goProductDetail(p.id),
+        cells: this.STAGES.map(stg => {
+          const ids = (p.supply && p.supply[stg.key]) || [];
+          return { empty: ids.length === 0, suppliers: ids.map(id => ({ name: this.sName(id), onClick: () => this.goSupplierDetail(id) })) };
+        }),
+      };
+    });
+    const archBuckets = this.ARCH_BUCKETS.map(a => {
+      const active = this.state.productArch === a.key;
+      const count = a.subcats ? this.PRODUCTS.filter(p => a.subcats.includes(p.subcat)).length : this.PRODUCTS.length;
+      return { label: a.label, count: String(count), bg: active ? '#0f172a' : '#fff', fg: active ? '#fff' : '#3f3b34',
+        border: active ? '#0f172a' : '#e5e2db', countColor: active ? '#9aa3b2' : '#a8a294',
+        onClick: () => this.setState({ productArch: a.key, productDomain: 'all', productSub: null }) };
+    });
+    const buildSelect = (f) => {
+      const map = this[f.map]; const val = fc[f.key]; const active = val !== 'all';
+      return { label: f.label, value: val, border: active ? '#0f172a' : '#e5e2db', bg: active ? '#0f172a' : '#fff', fg: active ? '#fff' : '#3f3b34',
+        options: [{ value: 'all', label: f.label + ': All' }, ...Object.keys(map).map(k => ({ value: k, label: map[k] }))],
+        onChange: (e) => this.setFacet(f.key, e.target.value) };
+    };
+    const facetGroups = this.FACET_GROUPS.map(g => ({ label: g.label, selects: g.keys.map(k => buildSelect(this.FACET_DEFS.find(f => f.key === k))) }));
+    const hasActiveFilters = this.state.productArch !== 'all' || dom !== 'all' || !!sub || q !== '' || this.FACET_DEFS.some(f => fc[f.key] !== 'all');
+    let subChipLabel = '';
+    if (sub) { const sd = (this.DOMAINS[dom] || this.DOMAINS.logic).subs.find(x => x.key === sub); subChipLabel = sd ? sd.label : sub; }
+
+    // ---- Product detail ----
+    const cpRaw = this.prod(this.state.selectedProductId) || this.PRODUCTS[0];
+    const stc = this.STATUS[cpRaw.status] || this.STATUS.eol;
+    const cp = {
+      name: cpRaw.name, vendor: cpRaw.vendor, family: cpRaw.family || '', subcatLabel: this.SUBCAT[cpRaw.subcat] || cpRaw.subcat,
+      node: cpRaw.node || '', status: cpRaw.status, statusBg: stc.bg, statusFg: stc.fg,
+      availLabel: cpRaw.avail ? 'Available ' + cpRaw.avail : '', verified: cpRaw.verified || '—',
+      attrItems: this.FACET_DEFS.filter(f => f.key !== 'status' && f.get(cpRaw) && this[f.map][f.get(cpRaw)]).map(f => ({ label: f.label, value: this[f.map][f.get(cpRaw)] })),
+      specRows: (cpRaw.specs || []).map(s => ({ label: s.label, value: s.value,
+        confLabel: s.conf ? '[' + this.CONF[s.conf].l + ']' : '', confColor: s.conf ? this.CONF[s.conf].c : 'transparent' })),
+      hasBom: !!cpRaw.bom,
+      uncertaintyLabel: cpRaw.bom ? '±' + cpRaw.bom.uncertainty + '%' : '',
+      bomItems: cpRaw.bom ? cpRaw.bom.items.map(b => ({
+        label: b.label, costStr: this.fmt(b.cost), qtyStr: b.qty && b.qty > 1 ? '×' + b.qty : '',
+        note: b.note || '', hasRef: !!b.ref, refName: b.ref ? (this.prod(b.ref) ? this.prod(b.ref).vendor + ' HBM' : b.ref) : '',
+        refOnClick: b.ref ? () => this.goProductDetail(b.ref) : null,
+        confLabel: b.conf ? '[' + this.CONF[b.conf].l + ']' : '', confColor: b.conf ? this.CONF[b.conf].c : 'transparent',
+      })) : [],
+      totalStr: cpRaw.bom ? this.fmt(cpRaw.bom.total) : '',
+      totalConfLabel: cpRaw.bom && cpRaw.bom.totalConf ? '[' + this.CONF[cpRaw.bom.totalConf].l + ']' : '',
+      totalConfColor: cpRaw.bom && cpRaw.bom.totalConf ? this.CONF[cpRaw.bom.totalConf].c : 'transparent',
+      supplyRows: this.STAGES.filter(st => (cpRaw.supply && cpRaw.supply[st.key] || []).length).map(st => ({
+        label: st.label, suppliers: cpRaw.supply[st.key].map(id => ({ name: this.sName(id), onClick: () => this.goSupplierDetail(id) })) })),
+      hasRelated: (cpRaw.rels || []).length > 0,
+      relatedItems: (cpRaw.rels || []).map(r => { const tp = this.prod(r.target);
+        return { typeLabel: r.type.replace(/_/g, ' '), name: tp ? tp.name : r.target, onClick: () => tp && this.goProductDetail(r.target) }; }),
+      sourceItems: (cpRaw.sources || []).map(id => ({ id, title: (this.SRC[id] || {}).title || id, meta: (this.SRC[id] || {}).meta || '' })),
+    };
+    Object.assign(cp, this.buildBrief(cpRaw));
+
+    // ---- Value chain ----
+    const vcStrip = this.VALUE_CHAIN.map((v, i) => {
+      const active = this.state.vcOpen === v.key;
+      return { label: v.label.split(' — ')[0].split(' (')[0], arrow: i < this.VALUE_CHAIN.length - 1 ? '→' : '',
+        bg: active ? '#0f172a' : '#fff', fg: active ? '#fff' : '#57534e', border: active ? '#0f172a' : '#e5e2db',
+        onClick: () => this.setState({ vcOpen: active ? null : v.key }) };
+    });
+    const vcRows = this.VALUE_CHAIN.map((v, i) => {
+      const open = this.state.vcOpen === v.key;
+      const totalSup = v.groups.reduce((a, g) => a + g.ids.length, 0);
+      return {
+        n: String(i + 1).padStart(2, '0'), label: v.label, desc: v.desc, open,
+        caret: open ? '▴' : '▾', border: open ? '#d8d3c9' : '#e5e2db', badgeBg: open ? '#9a6b3f' : '#0f172a',
+        supLabel: totalSup + ' suppliers', onToggle: () => this.setState({ vcOpen: open ? null : v.key }),
+        subs: v.subs,
+        groups: v.groups.map(g => ({ title: g.title, suppliers: g.ids.map(id => ({ name: this.sName(id), onClick: () => this.goSupplierDetail(id) })) })),
+      };
+    });
+
+    // ---- Suppliers ----
+    const stageFilter = this.state.supplierStage;
+    const supplierEntries = Object.keys(this.SUP).map(id => ({ id, ...this.SUP[id] }))
+      .filter(s => stageFilter === 'all' ? true : s.stages.includes(stageFilter))
+      .sort((a, b) => a.name.localeCompare(b.name));
+    const modelTagsOf = (models) => (models || []).map(m => ({ label: this.MODEL_LABEL[m] || m, bg: (this.MODEL_COLOR[m] || {}).bg || '#f1f0ec', fg: (this.MODEL_COLOR[m] || {}).fg || '#6b6557' }));
+    const supplierList = supplierEntries.map(s => ({ name: s.name, hq: s.hq,
+      modelTags: modelTagsOf(s.models),
+      stageSummary: s.stages.map(k => this.stageLabel(k)).join(' · '),
+      onClick: () => this.goSupplierDetail(s.id) }));
+    const stagePills = [{ key: 'all', label: 'All stages' }, ...this.STAGES].map(st => {
+      const active = stageFilter === st.key;
+      return { label: st.label, bg: active ? '#0f172a' : '#fff', fg: active ? '#fff' : '#3f3b34',
+        border: active ? '#0f172a' : '#e5e2db', onClick: () => this.setState({ supplierStage: st.key }) };
+    });
+
+    // ---- Supplier detail ----
+    const csId = this.state.selectedSupplierId;
+    const csRaw = this.SUP[csId] || this.SUP.tsmc;
+    const usingProducts = this.PRODUCTS.filter(p => p.supply && Object.values(p.supply).some(arr => arr.includes(csId)))
+      .map(p => {
+        const stagesUsed = this.STAGES.filter(st => (p.supply[st.key] || []).includes(csId)).map(st => st.label);
+        return { name: p.name, vendor: p.vendor, domainColor: this.domColor(p.domain),
+          stageLabel: stagesUsed.join(' · '), onClick: () => this.goProductDetail(p.id) };
+      });
+    const cs = {
+      name: csRaw.name, hq: csRaw.hq, modelTags: modelTagsOf(csRaw.models),
+      stageLabels: csRaw.stages.map(k => this.stageLabel(k)),
+      stageCountLabel: csRaw.stages.length + ' value-chain stage' + (csRaw.stages.length !== 1 ? 's' : ''),
+      productCountLabel: usingProducts.length + ' linked product' + (usingProducts.length !== 1 ? 's' : ''),
+      products: usingProducts, hasProducts: usingProducts.length > 0, noProducts: usingProducts.length === 0,
+    };
+
+    return {
+      navItems,
+      isHome: screen === 'atlas', isMap: screen === 'map', isProducts: screen === 'products', isProduct: screen === 'product',
+      isValueChain: screen === 'valuechain', isSuppliers: screen === 'suppliers', isSupplier: screen === 'supplier',
+      goHome: () => this.go('atlas'), goMap: () => this.go('map'), goProducts: () => this.go('products'), goSuppliers: () => this.go('suppliers'),
+      isGlossary: screen === 'glossary', isTerm: screen === 'term', isLearn: screen === 'learn',
+      goGlossary: () => this.go('glossary'), goLearn: () => this.go('learn'), goValueChain: () => this.go('valuechain'),
+      homeLayers, trending, glossaryGroups, ct, learnSteps, pop,
+      sun, mp,
+      stageColumns: this.STAGES, combinedRows, productsEmpty: combinedRows.length === 0,
+      archBuckets, facetGroups, hasActiveFilters, clearFilters: () => this.clearAllFilters(),
+      hasSub: !!sub, subChipLabel, clearSub: () => this.setState({ productSub: null }),
+      productQuery: this.state.productQuery, onQuery: (e) => this.setState({ productQuery: e.target.value }),
+      productCountLabel: filtered.length + ' product' + (filtered.length !== 1 ? 's' : '') + (dom !== 'all' ? ' · ' + this.DOMAINS[dom].label : ''),
+      cp, vcStrip, vcRows,
+      supplierList, stagePills, supplierCountLabel: supplierEntries.length + ' suppliers across the value chain',
+      cs,
+    };
+  }
+}
+</script>
+</body>
+</html>
