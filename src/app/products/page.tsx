@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { Suspense } from 'react'
 import { getProducts } from '@/lib/db'
 import ProductsTable from './ProductsTable'

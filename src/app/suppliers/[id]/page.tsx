@@ -1,8 +1,6 @@
-'use client'
-
-import { use } from 'react'
 import Link from 'next/link'
-import { SUPPLIERS, PRODUCTS, STAGES, MODEL_LABEL, MODEL_COLOR, STATUS_STYLE, LIFECYCLE } from '@/lib/data'
+import { STAGES, MODEL_LABEL, MODEL_COLOR, STATUS_STYLE, LIFECYCLE } from '@/lib/data'
+import { getProducts, getSuppliers } from '@/lib/db'
 
 function ModelBadge({ model }: { model: string }) {
   const c = MODEL_COLOR[model] ?? { bg: '#f1f0ec', fg: '#6b7280' }
@@ -14,9 +12,10 @@ function ModelBadge({ model }: { model: string }) {
   )
 }
 
-export default function SupplierPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params)
-  const sup = SUPPLIERS[id]
+export default async function SupplierPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const [suppliers, products] = await Promise.all([getSuppliers(), getProducts()])
+  const sup = suppliers[id]
 
   if (!sup) return (
     <div className="max-w-3xl mx-auto px-4 py-20 text-center">
@@ -26,7 +25,7 @@ export default function SupplierPage({ params }: { params: Promise<{ id: string 
   )
 
   // Find products this supplier is involved with
-  const relatedProducts = PRODUCTS.filter(p =>
+  const relatedProducts = products.filter(p =>
     Object.values(p.supply).some(ids => ids.includes(id))
   )
 
