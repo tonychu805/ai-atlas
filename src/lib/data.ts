@@ -326,7 +326,7 @@ export interface Product {
   verified?: string
   attrs?: Record<string, string>
   specs: { label: string; value: string; conf?: string }[]
-  bom: { uncertainty: number; items: BomItem[]; total: number; totalConf: string } | null
+  bom: { uncertainty: string; items: BomItem[]; total: number; totalConf: string } | null
   supply: Partial<Record<StageKey, string[]>>
   rels: { type: string; target: string; qty?: number }[]
   sources: string[]
@@ -352,6 +352,15 @@ export interface Supplier {
   hq: string
   models: string[]
   stages: StageKey[]
+}
+
+export interface Source {
+  id: string
+  title: string
+  publisher?: string | null
+  url?: string | null
+  type: string
+  retrieved?: string | null
 }
 
 export interface Term {

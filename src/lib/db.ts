@@ -1,5 +1,6 @@
 import { supabase } from './supabase'
-import type { Product, ProductSummary, Supplier } from './data'
+import type { Product, ProductSummary, Supplier, Source } from './data'
+import { groupRelationships, type ProductRelations, type RelRow } from './relationships'
 
 // DB columns differ from the app's field names in a few places; alias them in
 // the select so rows come back already shaped as Product / Supplier and the
@@ -58,4 +59,26 @@ export async function getSuppliers(): Promise<Record<string, Supplier>> {
   return Object.fromEntries(
     ((data ?? []) as unknown as Supplier[]).map(s => [s.id, s])
   )
+}
+
+// All relationships touching this product (both directions), grouped for the
+// detail page. Reads the normalized product_relationships table (155-product
+// coverage) rather than the stale products.rels jsonb.
+export async function getProductRelationships(id: string): Promise<ProductRelations> {
+  const { data, error } = await supabase
+    .from('product_relationships')
+    .select('from_product_id,to_product_id,type,qty')
+    .or(`from_product_id.eq.${id},to_product_id.eq.${id}`)
+  if (error) throw new Error(`getProductRelationships(${id}): ${error.message}`)
+  const names = await getProductNames()
+  return groupRelationships((data ?? []) as RelRow[], id, names)
+}
+
+// id → Source map from the sources table (real titles + URLs + retrieved dates).
+export async function getSources(): Promise<Record<string, Source>> {
+  const { data, error } = await supabase
+    .from('sources')
+    .select('id,title,publisher,url,type,retrieved')
+  if (error) throw new Error(`getSources: ${error.message}`)
+  return Object.fromEntries(((data ?? []) as Source[]).map(s => [s.id, s]))
 }
