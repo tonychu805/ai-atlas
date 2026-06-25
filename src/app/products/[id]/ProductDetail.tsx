@@ -338,7 +338,7 @@ export default function ProductDetail({ product, productNames, suppliers, summar
         )}
 
         {/* Supply flow Sankey */}
-        <SankeySection product={product} downstream={downstream} />
+        <SankeySection name={product.name} relations={relations} />
 
         {/* Sources */}
         {product.sources?.length > 0 && (
