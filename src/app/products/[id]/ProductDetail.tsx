@@ -82,14 +82,10 @@ function BriefContent({ brief, level, setLevel }: {
   )
 }
 
-type Downstream = { id: string; name: string; rels: { type: string; target: string; qty?: number }[] }
-
-export default function ProductDetail({ product, productNames, suppliers, summaries, downstream, relations, sources }: {
+export default function ProductDetail({ product, suppliers, summaries, relations, sources }: {
   product: Product
-  productNames: Record<string, string>
   suppliers: Record<string, Supplier>
   summaries: ProductSummary[]
-  downstream: Downstream[]
   relations: ProductRelations
   sources: Record<string, Source>
 }) {
