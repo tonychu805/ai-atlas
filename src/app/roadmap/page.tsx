@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getProductSummaries } from '@/lib/db'
 import RoadmapView from '../products/RoadmapView'
 

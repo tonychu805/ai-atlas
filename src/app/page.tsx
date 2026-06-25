@@ -26,8 +26,8 @@ const LAYERS = [
   {
     row: 'Product',
     cards: [
-      { title: 'Compute engines',           desc: 'CPUs, GPUs, TPUs and AI accelerators — the logic doing the work.',                                            link: '/products?domain=logic',        linkLabel: 'Logic products' },
-      { title: 'Memory & HBM',             desc: 'DRAM, NAND and the high-bandwidth memory feeding every AI accelerator.',                                       link: '/products?domain=memory',       linkLabel: 'Memory products' },
+      { title: 'Compute engines',           desc: 'CPUs, GPUs, TPUs and AI accelerators — the logic doing the work.',                                            link: '/products?tab=gpu',             linkLabel: 'Logic products' },
+      { title: 'Memory & HBM',             desc: 'DRAM, NAND and the high-bandwidth memory feeding every AI accelerator.',                                       link: '/products?tab=memory',          linkLabel: 'Memory products' },
       { title: 'Power & analog',           desc: 'Silicon carbide and gallium nitride for EVs and high-power systems.',                                           link: '/products',                     linkLabel: 'Browse domain' },
       { title: 'Sensors & IoT',           desc: "MEMS, image sensors and edge devices at the network's edge.",                                                   link: '/products',                     linkLabel: 'Browse domain' },
     ],
@@ -35,7 +35,7 @@ const LAYERS = [
   {
     row: 'Application',
     cards: [
-      { title: 'AI & data center',         desc: 'The accelerators, CPUs and HBM that train and serve large models.',                                            link: '/products?domain=logic',        linkLabel: 'Datacenter silicon' },
+      { title: 'AI & data center',         desc: 'The accelerators, CPUs and HBM that train and serve large models.',                                            link: '/products?tab=gpu',             linkLabel: 'Datacenter silicon' },
       { title: 'Automotive & EV',          desc: 'Wide-bandgap power devices and the supply chain behind electrification.',                                       link: '/products',                     linkLabel: 'Browse domain' },
       { title: 'Consumer & edge',          desc: 'Mobile SoCs, sensors and low-power silicon in everyday devices.',                                              link: '/products',                     linkLabel: 'Browse domain' },
     ],

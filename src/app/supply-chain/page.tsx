@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import { getProducts, getSuppliers } from '@/lib/db'
 import { STAGES, type Product } from '@/lib/data'

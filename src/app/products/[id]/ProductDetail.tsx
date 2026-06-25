@@ -9,6 +9,7 @@ import {
 } from '@/lib/data'
 import { Linkify } from '@/lib/linkify'
 import GenerationStrip from './GenerationStrip'
+import SankeySection from './SankeySection'
 
 type Level = 'L1' | 'L2' | 'L3'
 type BriefEntry = { l1: string; analogy?: string; l2?: string; l3?: string; why?: string; keyTerms?: string[] }
@@ -85,11 +86,14 @@ function BriefContent({ brief, level, setLevel }: {
   )
 }
 
-export default function ProductDetail({ product, productNames, suppliers, summaries }: {
+type Downstream = { id: string; name: string; rels: { type: string; target: string; qty?: number }[] }
+
+export default function ProductDetail({ product, productNames, suppliers, summaries, downstream }: {
   product: Product
   productNames: Record<string, string>
   suppliers: Record<string, Supplier>
   summaries: ProductSummary[]
+  downstream: Downstream[]
 }) {
   const [level, setLevel] = useState<Level>('L1')
 
@@ -329,6 +333,9 @@ export default function ProductDetail({ product, productNames, suppliers, summar
             </div>
           </section>
         )}
+
+        {/* Supply flow Sankey */}
+        <SankeySection product={product} downstream={downstream} />
 
         {/* Sources */}
         {product.sources?.length > 0 && (

@@ -43,6 +43,15 @@ export async function getProductSummaries(): Promise<ProductSummary[]> {
   return (data ?? []) as unknown as ProductSummary[]
 }
 
+export async function getProductDownstream(id: string): Promise<{ id: string; name: string; rels: { type: string; target: string; qty?: number }[] }[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select('id,name,rels')
+    .filter('rels', 'cs', JSON.stringify([{ type: 'uses', target: id }]))
+  if (error) throw new Error(`getProductDownstream(${id}): ${error.message}`)
+  return (data ?? []) as { id: string; name: string; rels: { type: string; target: string; qty?: number }[] }[]
+}
+
 export async function getSuppliers(): Promise<Record<string, Supplier>> {
   const { data, error } = await supabase.from('suppliers').select(SUPPLIER_SELECT)
   if (error) throw new Error(`getSuppliers: ${error.message}`)

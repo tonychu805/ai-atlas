@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { FACET_DEFS, STATUS_STYLE, LIFECYCLE, type Product } from '@/lib/data'
 
 const TABS: { key: string; label: string; filter: (p: Product) => boolean }[] = [
@@ -20,7 +21,9 @@ const FILTER_GROUPS: { label: string; facets: string[] }[] = [
 type FacetDef = { key: string; label: string; map: Record<string, string>; get: (p: Product) => string | undefined }
 
 export default function ProductsTable({ products }: { products: Product[] }) {
-  const [tab, setTab]         = useState('all')
+  const searchParams = useSearchParams()
+  const initialTab = TABS.find(t => t.key === searchParams.get('tab'))?.key ?? 'all'
+  const [tab, setTab]         = useState(initialTab)
   const [search, setSearch]   = useState('')
   const [filters, setFilters] = useState<Record<string, string>>({})
 
