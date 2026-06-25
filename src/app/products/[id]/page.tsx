@@ -1,11 +1,15 @@
 import Link from 'next/link'
-import { getProduct, getProductDownstream, getProductNames, getProductSummaries, getSuppliers } from '@/lib/db'
+import {
+  getProduct, getProductDownstream, getProductNames, getProductSummaries,
+  getSuppliers, getProductRelationships, getSources,
+} from '@/lib/db'
 import ProductDetail from './ProductDetail'
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [product, productNames, suppliers, summaries, downstream] = await Promise.all([
-    getProduct(id), getProductNames(), getSuppliers(), getProductSummaries(), getProductDownstream(id),
+  const [product, productNames, suppliers, summaries, downstream, relations, sources] = await Promise.all([
+    getProduct(id), getProductNames(), getSuppliers(), getProductSummaries(),
+    getProductDownstream(id), getProductRelationships(id), getSources(),
   ])
 
   if (!product) return (
@@ -15,5 +19,5 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     </div>
   )
 
-  return <ProductDetail product={product} productNames={productNames} suppliers={suppliers} summaries={summaries} downstream={downstream} />
+  return <ProductDetail product={product} productNames={productNames} suppliers={suppliers} summaries={summaries} downstream={downstream} relations={relations} sources={sources} />
 }

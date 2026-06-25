@@ -5,8 +5,9 @@ import Link from 'next/link'
 import {
   PRODUCT_BRIEF, SOURCES, STAGES, STATUS_STYLE, CONF_STYLE,
   FACET_DEFS, DOMAINS, LIFECYCLE, fmtUSD,
-  type Product, type ProductSummary, type Supplier,
+  type Product, type ProductSummary, type Supplier, type Source,
 } from '@/lib/data'
+import type { ProductRelations } from '@/lib/relationships'
 import { Linkify } from '@/lib/linkify'
 import GenerationStrip from './GenerationStrip'
 import SankeySection from './SankeySection'
@@ -88,12 +89,14 @@ function BriefContent({ brief, level, setLevel }: {
 
 type Downstream = { id: string; name: string; rels: { type: string; target: string; qty?: number }[] }
 
-export default function ProductDetail({ product, productNames, suppliers, summaries, downstream }: {
+export default function ProductDetail({ product, productNames, suppliers, summaries, downstream, relations, sources }: {
   product: Product
   productNames: Record<string, string>
   suppliers: Record<string, Supplier>
   summaries: ProductSummary[]
   downstream: Downstream[]
+  relations: ProductRelations
+  sources: Record<string, Source>
 }) {
   const [level, setLevel] = useState<Level>('L1')
 
