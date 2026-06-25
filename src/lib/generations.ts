@@ -19,6 +19,46 @@ export function findAdjacent(
   return { predecessor, successor }
 }
 
+// Full succession chain containing currentId: walks backward to the oldest
+// ancestor, then forward to the newest descendant, returning all in order.
+export function getFullChain(
+  currentId: string,
+  all: ProductSummary[],
+): ProductSummary[] {
+  const byId = new Map(all.map(p => [p.id, p]))
+  const getPredId = (p: ProductSummary) =>
+    p.rels?.find(r => r.type === 'succeeds')?.target
+
+  // predecessor_id → successor product
+  const succMap = new Map<string, ProductSummary>()
+  for (const p of all) {
+    const pred = getPredId(p)
+    if (pred) succMap.set(pred, p)
+  }
+
+  // walk backward to oldest ancestor
+  let root = byId.get(currentId)
+  const visited = new Set<string>()
+  while (root) {
+    if (visited.has(root.id)) break
+    visited.add(root.id)
+    const predId = getPredId(root)
+    if (!predId || !byId.has(predId)) break
+    root = byId.get(predId)
+  }
+
+  // walk forward from root to build ordered chain
+  const chain: ProductSummary[] = []
+  let cur = root
+  const seen = new Set<string>()
+  while (cur && !seen.has(cur.id) && chain.length < 20) {
+    chain.push(cur)
+    seen.add(cur.id)
+    cur = succMap.get(cur.id)
+  }
+  return chain
+}
+
 // Order one vendor+sub group: succession chains (root → leaf) first, then
 // products that take part in no chain, alphabetically by name.
 export function orderGeneration(group: ProductSummary[]): ProductSummary[] {

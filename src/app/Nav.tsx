@@ -4,11 +4,13 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 
 const LINKS = [
-  { href: '/',           label: 'Home',        exact: true },
-  { href: '/products',   label: 'Products' },
-  { href: '/valuechain', label: 'Value Chain' },
-  { href: '/suppliers',  label: 'Suppliers' },
-  { href: '/glossary',   label: 'Glossary' },
+  { href: '/',              label: 'Home',         exact: true },
+  { href: '/products',      label: 'Products' },
+  { href: '/roadmap',       label: 'Roadmap' },
+  { href: '/supply-chain',  label: 'Supply Chain' },
+  { href: '/valuechain',    label: 'Value Chain' },
+  { href: '/suppliers',     label: 'Suppliers' },
+  { href: '/glossary',      label: 'Glossary' },
 ]
 
 function LogoIcon() {

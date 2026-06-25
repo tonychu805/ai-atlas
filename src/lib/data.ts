@@ -290,7 +290,6 @@ export const MODEL_COLOR: Record<string, { bg: string; fg: string }> = {
 }
 
 export const FACET_DEFS: { key: string; label: string; map: Record<string,string>; get: (p: Product) => string | undefined }[] = [
-  { key: 'status',        label: 'Status',        map: LIFECYCLE, get: p => p.status },
   { key: 'company_type',  label: 'Company type',  map: COMPANY,   get: p => VENDOR_TYPE[p.vendor] },
   { key: 'packaging',     label: 'Packaging',     map: PACK,      get: p => PRODUCT_PACK[p.id] },
   { key: 'node_maturity', label: 'Node maturity', map: NODE_MAT,  get: p => p.attrs?.node_maturity },
@@ -322,6 +321,7 @@ export interface Product {
   family?: string
   status: string
   node?: string
+  image_url?: string
   avail?: string
   verified?: string
   attrs?: Record<string, string>
