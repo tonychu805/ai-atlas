@@ -3,23 +3,18 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import {
-  PRODUCT_BRIEF, SOURCES, STAGES, STATUS_STYLE, CONF_STYLE,
+  PRODUCT_BRIEF, STAGES, STATUS_STYLE, CONF_STYLE,
   FACET_DEFS, DOMAINS, LIFECYCLE, fmtUSD,
   type Product, type ProductSummary, type Supplier, type Source,
 } from '@/lib/data'
 import type { ProductRelations } from '@/lib/relationships'
+import { pickHeroMetrics, hasValidBom } from '@/lib/productView'
 import { Linkify } from '@/lib/linkify'
 import GenerationStrip from './GenerationStrip'
 import SankeySection from './SankeySection'
 
 type Level = 'L1' | 'L2' | 'L3'
 type BriefEntry = { l1: string; analogy?: string; l2?: string; l3?: string; why?: string; keyTerms?: string[] }
-
-const REL_DISPLAY: Record<string, string> = {
-  competes_with: 'Competes with',
-  uses: 'Uses',
-}
-const REL_ORDER = ['competes_with', 'uses']
 
 function StatusBadge({ status }: { status: string }) {
   const s = STATUS_STYLE[status] ?? { bg: '#f1f0ec', fg: '#6b7280' }
@@ -104,14 +99,8 @@ export default function ProductDetail({ product, productNames, suppliers, summar
   const domain = DOMAINS[product.domain as keyof typeof DOMAINS]
   const hasSpecs = product.specs.length > 0
 
-  // Relationships — group by type, exclude succeeds/fabbed_by/packaged_by
-  const relsByType: Record<string, { target: string; qty?: number }[]> = {}
-  for (const r of product.rels ?? []) {
-    if (!REL_DISPLAY[r.type]) continue
-    if (!relsByType[r.type]) relsByType[r.type] = []
-    relsByType[r.type].push(r)
-  }
-  const hasRels = REL_ORDER.some(t => relsByType[t]?.length)
+  const heroMetrics = pickHeroMetrics(product.specs)
+  const competitors = relations.competesWith
 
   // Suppliers grouped by stage
   const stageGroups = STAGES
@@ -176,30 +165,34 @@ export default function ProductDetail({ product, productNames, suppliers, summar
           </section>
         ) : null}
 
-        {/* Related products (competes_with, uses) */}
-        {hasRels && (
+        {/* Hero metrics strip */}
+        {heroMetrics.length > 0 && (
           <section className="mb-8">
-            <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#a8a294' }}>Related products</p>
-            <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--border)', background: '#fff' }}>
-              {REL_ORDER.filter(t => relsByType[t]?.length).map((t, i) => (
-                <div key={t}
-                  className="flex items-start gap-4 px-4 py-3"
-                  style={{ borderTop: i > 0 ? '1px solid var(--border)' : undefined }}>
-                  <span className="text-xs pt-0.5 shrink-0" style={{ color: '#8a8579', width: 100 }}>{REL_DISPLAY[t]}</span>
-                  <div className="flex flex-wrap gap-2">
-                    {relsByType[t].map(r => (
-                      <Link
-                        key={r.target}
-                        href={`/products/${r.target}`}
-                        className="text-xs px-2.5 py-1 rounded-full border transition-shadow hover:shadow-sm"
-                        style={{ borderColor: '#d6d3cb', background: '#fbfaf8', color: '#3d3b37', textDecoration: 'none' }}
-                      >
-                        {productNames[r.target] ?? r.target}
-                        {r.qty && <span style={{ color: '#8a8579' }}> ×{r.qty}</span>}
-                      </Link>
-                    ))}
-                  </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              {heroMetrics.map(m => (
+                <div key={m.label} className="rounded-xl border px-4 py-3" style={{ borderColor: 'var(--border)', background: '#fff' }}>
+                  <p className="text-base font-semibold" style={{ color: '#0f172a' }}>{m.value}</p>
+                  <p className="text-xs mt-0.5" style={{ color: '#8a8579' }}>{m.label}</p>
                 </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Competes with */}
+        {competitors.length > 0 && (
+          <section className="mb-8">
+            <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#a8a294' }}>Competes with</p>
+            <div className="flex flex-wrap gap-2">
+              {competitors.map(c => (
+                <Link
+                  key={c.id}
+                  href={`/products/${c.id}`}
+                  className="text-xs px-2.5 py-1 rounded-full border transition-shadow hover:shadow-sm"
+                  style={{ borderColor: '#d6d3cb', background: '#fbfaf8', color: '#3d3b37', textDecoration: 'none' }}
+                >
+                  {c.name}
+                </Link>
               ))}
             </div>
           </section>
@@ -303,11 +296,11 @@ export default function ProductDetail({ product, productNames, suppliers, summar
         )}
 
         {/* BOM */}
-        {product.bom && (
+        {hasValidBom(product.bom) && product.bom && (
           <section className="mb-8">
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a8a294' }}>BOM cost estimate</p>
-              <span className="text-xs" style={{ color: '#8a8579' }}>±{product.bom.uncertainty}%</span>
+              <span className="text-xs" style={{ color: '#8a8579' }}>{product.bom.uncertainty}</span>
             </div>
             <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--border)' }}>
               <table className="w-full text-sm" style={{ background: '#fff' }}>
@@ -340,21 +333,27 @@ export default function ProductDetail({ product, productNames, suppliers, summar
         {/* Supply flow Sankey */}
         <SankeySection name={product.name} relations={relations} />
 
-        {/* Sources */}
-        {product.sources?.length > 0 && (
+        {/* Sources & provenance */}
+        {product.sources?.some(sid => sources[sid]) && (
           <section className="rounded-xl border p-5" style={{ borderColor: 'var(--border)', background: '#fbfaf8' }}>
             <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: '#a8a294' }}>Sources & provenance</h2>
             <div className="flex flex-col gap-2">
               {product.sources.map(sid => {
-                const src = SOURCES[sid]
+                const src = sources[sid]
                 if (!src) return null
+                const meta = [src.publisher, src.type, src.retrieved ? `retrieved ${src.retrieved}` : null].filter(Boolean).join(' · ')
+                const body = (
+                  <div>
+                    <p style={{ color: src.url ? '#9a6b3f' : '#3d3b37' }}>{src.title}</p>
+                    <p style={{ color: '#a8a294' }}>{meta}</p>
+                  </div>
+                )
                 return (
                   <div key={sid} className="flex items-start gap-3 text-xs">
-                    <span className="font-mono px-1.5 py-0.5 rounded shrink-0" style={{ background: '#f1f0ec', color: '#8a8579' }}>{sid}</span>
-                    <div>
-                      <p style={{ color: '#3d3b37' }}>{src.title}</p>
-                      <p style={{ color: '#a8a294' }}>{src.meta}</p>
-                    </div>
+                    <span className="font-mono px-1.5 py-0.5 rounded shrink-0" style={{ background: '#f1f0ec', color: '#8a8579' }}>{src.type}</span>
+                    {src.url
+                      ? <a href={src.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>{body}</a>
+                      : body}
                   </div>
                 )
               })}

@@ -17,17 +17,26 @@ const SUPPLIER_SELECT = 'id,name,hq,models,stages'
 // Subset of PRODUCT_SELECT for the roadmap view + detail-page generation strip.
 const PRODUCT_SUMMARY_SELECT = 'id,name,vendor,sub,subcat:subcategory,family,status,node:process_node,rels'
 
+// The specs column is an array for populated products but defaults to an empty
+// object ({}) for ~9 stub products. The Product type promises an array, so
+// coerce non-arrays to [] to keep every consumer (.length/.slice/.findIndex) safe.
+function normalizeProduct(row: unknown): Product {
+  const p = row as Product
+  if (!Array.isArray(p.specs)) p.specs = []
+  return p
+}
+
 export async function getProducts(): Promise<Product[]> {
   const { data, error } = await supabase.from('products').select(PRODUCT_SELECT)
   if (error) throw new Error(`getProducts: ${error.message}`)
-  return (data ?? []) as unknown as Product[]
+  return ((data ?? []) as unknown[]).map(normalizeProduct)
 }
 
 export async function getProduct(id: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('products').select(PRODUCT_SELECT).eq('id', id).maybeSingle()
   if (error) throw new Error(`getProduct(${id}): ${error.message}`)
-  return (data as unknown as Product) ?? null
+  return data ? normalizeProduct(data) : null
 }
 
 // Lightweight id → name map for resolving cross-references (e.g. a product's
