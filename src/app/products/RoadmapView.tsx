@@ -13,26 +13,26 @@ function Pill({ p }: { p: ProductSummary }) {
   return (
     <Link
       href={`/products/${p.id}`}
-      className="flex-shrink-0 inline-flex flex-col gap-0.5 px-3 py-1.5 rounded-lg border transition-shadow hover:shadow-sm"
+      className="flex-shrink-0 inline-flex flex-col gap-1.5 px-4 py-3 rounded-lg border transition-shadow hover:shadow-sm"
       style={{
         borderColor: '#d6d3cb', background: s.bg, textDecoration: 'none',
         opacity: eol ? 0.55 : 1,
       }}
       title={LIFECYCLE[p.status] ?? p.status}
     >
-      <span className="text-sm font-medium leading-tight" style={{ color: s.fg }}>{p.name}</span>
-      {p.node && <span className="text-xs font-mono leading-tight" style={{ color: '#8a8579' }}>{p.node}</span>}
+      <span className="text-sm font-medium whitespace-nowrap" style={{ color: s.fg }}>{p.name}</span>
+      {p.node && <span className="text-xs font-mono" style={{ color: '#8a8579' }}>{p.node}</span>}
     </Link>
   )
 }
 
 function Row({ label, items }: { label: string; items: ProductSummary[] }) {
   return (
-    <div className="mb-4">
+    <div className="mb-6">
       {label && <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: '#a8a294' }}>{label}</p>}
       <div className="flex items-center gap-2 overflow-x-auto ax-scroll pb-1">
         {items.map((p, i) => (
-          <div key={p.id} className="flex items-center gap-2">
+          <div key={p.id} className="flex items-center gap-2 flex-shrink-0">
             {i > 0 && <span style={{ color: '#cbc7bd' }}>→</span>}
             <Pill p={p} />
           </div>
@@ -65,7 +65,7 @@ export default function RoadmapView({ products }: { products: ProductSummary[] }
           // Vendors with 1–2 products: a single flat row, no sub grouping.
           if (list.length <= 2) {
             return (
-              <section key={vendor} className="mb-8">
+              <section key={vendor} className="mb-8 pt-8 border-t first:border-t-0 first:pt-0" style={{ borderColor: 'var(--border)' }}>
                 <h2 className="text-lg font-semibold mb-3" style={{ color: '#0f172a' }}>{vendor}</h2>
                 <Row label="" items={orderGeneration(list)} />
               </section>
@@ -84,7 +84,7 @@ export default function RoadmapView({ products }: { products: ProductSummary[] }
             (SUB_LABEL[a] ?? a).localeCompare(SUB_LABEL[b] ?? b))
 
           return (
-            <section key={vendor} className="mb-8">
+            <section key={vendor} className="mb-8 pt-8 border-t first:border-t-0 first:pt-0" style={{ borderColor: 'var(--border)' }}>
               <h2 className="text-lg font-semibold mb-3" style={{ color: '#0f172a' }}>{vendor}</h2>
               {subs.map(sub => (
                 <Row key={sub} label={SUB_LABEL[sub] ?? sub} items={orderGeneration(bySub.get(sub)!)} />
