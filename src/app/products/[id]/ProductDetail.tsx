@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import Link from 'next/link'
 import {
   STAGES, STATUS_STYLE, CONF_STYLE, SPEC_TEMPLATES,
@@ -40,7 +41,7 @@ export default function ProductDetail({ product, suppliers, summaries, relations
   const domain = DOMAINS[product.domain as keyof typeof DOMAINS]
   const notesSpec = product.specs.find(s => s.label === 'Notes')
 
-  const heroMetrics = pickHeroMetrics(product.specs)
+  const heroMetrics = pickHeroMetrics(product.specs, product.sub)
   const competitors = relations.competesWith
 
   // Template-driven spec table
@@ -134,8 +135,8 @@ export default function ProductDetail({ product, suppliers, summaries, relations
               <table className="w-full text-sm">
                 <tbody>
                   {stageGroups.map(({ stage, sids }) => (
-                    <>
-                      <tr key={`stage-${stage.key}`} style={{ background: '#f8f7f4', borderTop: '1px solid var(--border)' }}>
+                    <React.Fragment key={`stage-${stage.key}`}>
+                      <tr style={{ background: '#f8f7f4', borderTop: '1px solid var(--border)' }}>
                         <td
                           colSpan={1}
                           className="px-4 py-1.5 text-xs font-semibold uppercase tracking-wider"
@@ -157,7 +158,7 @@ export default function ProductDetail({ product, suppliers, summaries, relations
                           </td>
                         </tr>
                       ))}
-                    </>
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>

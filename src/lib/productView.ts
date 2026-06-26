@@ -1,22 +1,10 @@
+import { HERO_TEMPLATES } from './config'
 import type { Product } from './config'
 
-// Substring keys matched against spec labels, in display priority order.
-const HERO_PRIORITY = ['memory', 'bandwidth', 'compute', 'tdp', 'interconnect']
-
-// Lift up to `max` headline specs for the hero strip, in priority order.
-// Each spec is used at most once. Returns [] when nothing matches.
-export function pickHeroMetrics(specs: Product['specs'], max = 5): Product['specs'] {
-  const picked: Product['specs'] = []
-  const used = new Set<number>()
-  for (const key of HERO_PRIORITY) {
-    const idx = specs.findIndex((s, i) => !used.has(i) && s.label.toLowerCase().includes(key))
-    if (idx >= 0) {
-      used.add(idx)
-      picked.push(specs[idx])
-      if (picked.length >= max) break
-    }
-  }
-  return picked
+export function pickHeroMetrics(specs: Product['specs'], sub: string): Product['specs'] {
+  const labels = HERO_TEMPLATES[sub] ?? []
+  const byLabel = Object.fromEntries(specs.map(s => [s.label, s]))
+  return labels.map(l => byLabel[l]).filter(Boolean) as Product['specs']
 }
 
 // The BOM column now defaults to objects that may lack a usable items array

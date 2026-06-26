@@ -575,6 +575,15 @@ export const VALUE_CHAIN: ValueChainStage[] = [
 // Defines the fixed ordered rows shown in each product type's spec table.
 // Values are filled from product.specs by label match; missing = "—".
 
+export const HERO_TEMPLATES: Record<string, string[]> = {
+  ai_accelerator: ['FP8 compute', 'BF16 compute', 'Memory', 'Bandwidth', 'TDP'],
+  cpu:            ['Cores', 'Memory', 'TDP'],
+  dram_hbm:       ['Capacity', 'Bandwidth', 'Power'],
+  dram_commodity: ['Data rate', 'Capacity', 'Bandwidth'],
+  networking:     ['Throughput', 'Latency', 'TDP'],
+  soc:            ['Compute', 'Memory', 'Price'],
+}
+
 export const SPEC_TEMPLATES: Record<string, string[]> = {
   ai_accelerator: [
     'Transistors', 'Process', 'Die config', 'Architecture',

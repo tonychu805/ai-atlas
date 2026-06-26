@@ -1,34 +1,32 @@
 import { describe, it, expect } from 'vitest'
 import { pickHeroMetrics, hasValidBom } from './productView'
 
-const specs = [
-  { label: 'Transistors', value: '208 B' },
+const accelSpecs = [
   { label: 'FP8 compute', value: '4,500 TFLOPS' },
+  { label: 'BF16 compute', value: '2,250 TFLOPS' },
   { label: 'Memory', value: '192 GB HBM3E' },
   { label: 'Bandwidth', value: '8.0 TB/s' },
   { label: 'TDP', value: '1,000 W' },
-  { label: 'Interconnect', value: 'NVLink 5' },
-  { label: 'Form factor', value: 'SXM' },
+  { label: 'Transistors', value: '208 B' },
 ]
 
 describe('pickHeroMetrics', () => {
-  it('returns priority metrics in priority order, capped at max', () => {
-    const r = pickHeroMetrics(specs, 5).map(s => s.label)
-    expect(r).toEqual(['Memory', 'Bandwidth', 'FP8 compute', 'TDP', 'Interconnect'])
+  it('returns hero labels for ai_accelerator in template order', () => {
+    const r = pickHeroMetrics(accelSpecs, 'ai_accelerator').map(s => s.label)
+    expect(r).toEqual(['FP8 compute', 'BF16 compute', 'Memory', 'Bandwidth', 'TDP'])
   })
 
-  it('skips priorities that are absent', () => {
-    const r = pickHeroMetrics([{ label: 'Memory', value: '24 GB' }]).map(s => s.label)
+  it('skips labels absent from the spec list', () => {
+    const r = pickHeroMetrics([{ label: 'Memory', value: '24 GB' }], 'ai_accelerator').map(s => s.label)
     expect(r).toEqual(['Memory'])
   })
 
-  it('returns empty when no priority labels match', () => {
-    expect(pickHeroMetrics([{ label: 'Transistors', value: '80 B' }])).toEqual([])
+  it('returns empty for unknown subcategory', () => {
+    expect(pickHeroMetrics(accelSpecs, 'unknown')).toEqual([])
   })
 
-  it('matches case-insensitively and does not reuse a spec', () => {
-    const r = pickHeroMetrics([{ label: 'memory', value: '24 GB' }])
-    expect(r).toHaveLength(1)
+  it('returns empty when no template labels are present in specs', () => {
+    expect(pickHeroMetrics([{ label: 'Transistors', value: '80 B' }], 'ai_accelerator')).toEqual([])
   })
 })
 
