@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import type { Product } from '@/lib/data'
+import type { Product } from '@/lib/config'
 
 export default function CompositionSection({ product, productNames }: {
   product: Product

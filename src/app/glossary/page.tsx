@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { TERMS } from '@/lib/data'
+import { TERMS } from '@/lib/config'
 
 const CAT_LABEL: Record<string, string> = {
   concept: 'Concepts', process: 'Processes', component: 'Components',

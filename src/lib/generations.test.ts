@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { orderGeneration, findAdjacent } from './generations'
-import type { ProductSummary } from './data'
+import type { ProductSummary } from './config'
 
 function p(id: string, name: string, succeeds?: string): ProductSummary {
   return {

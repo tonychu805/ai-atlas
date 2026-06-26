@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useRef, useCallback, ReactNode } from 'react'
-import { TERMS } from './data'
+import { TERMS } from './config'
 
 interface PopoverState {
   termId: string

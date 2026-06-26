@@ -1,4 +1,4 @@
-import type { ProductSummary } from './data'
+import type { ProductSummary } from './config'
 
 const SUCCEEDS = 'succeeds'
 

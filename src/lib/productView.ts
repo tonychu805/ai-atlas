@@ -1,4 +1,4 @@
-import type { Product } from './data'
+import type { Product } from './config'
 
 // Substring keys matched against spec labels, in display priority order.
 const HERO_PRIORITY = ['memory', 'bandwidth', 'compute', 'tdp', 'interconnect']

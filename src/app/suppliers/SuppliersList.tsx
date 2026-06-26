@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { STAGES, MODEL_LABEL, MODEL_COLOR, type Supplier } from '@/lib/data'
+import { STAGES, MODEL_LABEL, MODEL_COLOR, type Supplier } from '@/lib/config'
 
 function ModelBadge({ model }: { model: string }) {
   const c = MODEL_COLOR[model] ?? { bg: '#f1f0ec', fg: '#6b7280' }

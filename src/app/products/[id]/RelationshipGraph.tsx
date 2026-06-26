@@ -13,7 +13,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import Link from 'next/link'
-import type { Product } from '@/lib/data'
+import type { Product } from '@/lib/config'
 
 const REL_STYLE: Record<string, { label: string; color: string; dash?: string; arrow: boolean }> = {
   competes_with: { label: 'competes with', color: '#dc2626', arrow: false },

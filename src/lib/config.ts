@@ -332,8 +332,6 @@ export interface Product {
   sources: string[]
 }
 
-// Lightweight shape for the roadmap view and the detail-page generation strip.
-// A subset of Product columns — no specs / bom / supply / sources.
 export interface ProductSummary {
   id: string
   name: string
@@ -393,7 +391,7 @@ export interface ValueChainStage {
   groups: { title: string; ids: string[] }[]
 }
 
-// ─── Sources ─────────────────────────────────────────────────────────────────
+// ─── Sources (glossary term citations — separate from Supabase product sources) ──
 
 export const SOURCES: Record<string, { title: string; meta: string }> = {
   'src-001': { title: 'Blackwell Architecture Technical Brief',  meta: 'NVIDIA · datasheet · 2024-03' },
@@ -401,41 +399,6 @@ export const SOURCES: Record<string, { title: string; meta: string }> = {
   'src-003': { title: 'B200 package teardown analysis',           meta: 'TechInsights · teardown · 2025-09' },
   'src-004': { title: 'HBM3E product datasheet',                  meta: 'SK Hynix · datasheet · 2024-05' },
   'est':     { title: 'AI Atlas internal cost model',             meta: 'AI Atlas · estimate · 2026-06' },
-}
-
-// ─── Products & Suppliers (moved to Supabase) ────────────────────────────────
-// PRODUCTS and SUPPLIERS data now lives in Supabase. Read it via src/lib/db.ts
-// (getProducts / getProduct / getProductNames / getSuppliers). The Product and
-// Supplier TYPES above remain the shared shape. Editorial + taxonomy (SOURCES,
-// PRODUCT_BRIEF, TERMS, VALUE_CHAIN, DOMAINS, STAGES, FACET_DEFS, VENDOR_TYPE,
-// PRODUCT_PACK, …) intentionally stay in this file.
-// ─── Product briefs ───────────────────────────────────────────────────────────
-
-export const PRODUCT_BRIEF: Record<string, { l1: string; analogy?: string; l2?: string; l3?: string; why?: string; keyTerms?: string[] }> = {
-  'nvidia-b200': {
-    l1: "NVIDIA's flagship AI accelerator — two large compute dies plus eight HBM3E memory stacks packaged together to act as one enormous chip.",
-    analogy: "A racing engine bolted directly to its fuel tanks so nothing starves it.",
-    l2: "B200 pairs dual reticle-sized dies with 192 GB of HBM3E on a CoWoS package. The memory sits millimetres from compute so the chip isn't starved for bandwidth during training.",
-    l3: "Built on TSMC 4NP (~208B transistors), with ~8 TB/s memory bandwidth, NVLink 5 and a 1,000W TDP in SXM form factor. HBM and advanced packaging dominate its build cost.",
-    why: "The B200 is the reference design the entire AI-hardware supply chain is racing to feed — its HBM and CoWoS demand set the market.",
-    keyTerms: ['hbm','cowos','chiplet','finfet','bandwidth'],
-  },
-  'skhynix-hbm3e-8hi': {
-    l1: "A single stack of eight DRAM chips wired vertically and built to sit right beside an AI processor, feeding it data at huge speed.",
-    analogy: "A parking garage instead of a parking lot — same cars, far less walking.",
-    l2: "This 8-high HBM3E stack delivers 24 GB and ~1.2 TB/s over a 1024-bit interface. Through-silicon vias connect the dies; the stack mounts on the accelerator's interposer.",
-    l3: "Built on 1b-nm DRAM, 8-Hi over a base logic die at ~9.6 Gbps/pin. SK Hynix leads HBM share, and stacking yield is a tight constraint.",
-    why: "HBM is the highest-value component in an AI accelerator after the logic die, and SK Hynix's lead makes it a strategic supplier.",
-    keyTerms: ['hbm','tsv','interposer','bandwidth'],
-  },
-  'amd-mi300x': {
-    l1: "AMD's data-center AI accelerator, built from many smaller chiplets plus HBM, all fused together in one package.",
-    analogy: "A team of specialists working shoulder to shoulder instead of one overworked generalist.",
-    l2: "MI300X combines eight compute chiplets and four I/O dies with 192 GB of HBM3 using CoWoS and 3D stacking — a chiplet-heavy answer to the B200.",
-    l3: "TSMC N5/N6 chiplets, ~153B transistors, ~5.3 TB/s bandwidth, 750W. Heavy use of advanced packaging defines its cost structure.",
-    why: "MI300X is the main credible challenger to NVIDIA in AI training, so its supply chain matters to market competition.",
-    keyTerms: ['chiplet','hbm','cowos','interposer'],
-  },
 }
 
 // ─── Glossary / Terms ─────────────────────────────────────────────────────────
@@ -614,8 +577,38 @@ export const LEARN_STEPS = [
   { n: 9,  title: 'Into the rack',       l1: 'Verified accelerators like the B200 are assembled into servers and racks for data centers.', l2: 'Many accelerators plus CPUs, networking and memory combine into the systems that train AI models.', why: 'This is where all the upstream supply chains finally converge.', node: { kind: 'product', id: 'nvidia-b200' }, linkLabel: 'See the NVIDIA B200' },
 ]
 
+// ─── Spec templates ───────────────────────────────────────────────────────────
+// Defines the fixed ordered rows shown in each product type's spec table.
+// Values are filled from product.specs by label match; missing = "—".
+
+export const SPEC_TEMPLATES: Record<string, string[]> = {
+  ai_accelerator: [
+    'Transistors', 'Process', 'Die config', 'Architecture',
+    'FP8 compute', 'FP4 compute', 'BF16 compute',
+    'Memory', 'Memory type', 'Bandwidth',
+    'TDP', 'Interconnect', 'Form factor',
+  ],
+  cpu: [
+    'Cores', 'Process', 'Architecture',
+    'Memory', 'Socket', 'TDP', 'Packaging',
+  ],
+  dram_hbm: [
+    'Stack height', 'Capacity', 'Interface',
+    'Bandwidth', 'Pin speed', 'TSV', 'Power',
+  ],
+  dram_commodity: [
+    'Data rate', 'Capacity', 'Bandwidth', 'Form',
+  ],
+  networking: [
+    'Throughput', 'Ports', 'Process',
+    'TDP', 'Latency', 'Standards',
+  ],
+  soc: [
+    'Chips', 'Compute', 'Memory', 'Network', 'Price',
+  ],
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 export function domainColor(d: string) { return (DOMAINS as Record<string,{color:string}>)[d]?.color ?? '#8a8579' }
 export function fmtUSD(n: number) { return '$' + Number(n).toLocaleString() }
-

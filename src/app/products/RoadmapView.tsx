@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { DOMAINS, STATUS_STYLE, LIFECYCLE, type ProductSummary } from '@/lib/data'
+import { DOMAINS, STATUS_STYLE, LIFECYCLE, type ProductSummary } from '@/lib/config'
 import { orderGeneration } from '@/lib/generations'
 
 // sub key -> human label, flattened from every domain's sub list.

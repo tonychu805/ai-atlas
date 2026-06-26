@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, Fragment } from 'react'
-import { TERMS } from './data'
+import { TERMS } from './config'
 import { usePopover } from './popover-context'
 
 // Build alias → termId map

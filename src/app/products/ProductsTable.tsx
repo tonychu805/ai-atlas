@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { FACET_DEFS, STATUS_STYLE, LIFECYCLE, type Product } from '@/lib/data'
+import { FACET_DEFS, STATUS_STYLE, LIFECYCLE, type Product } from '@/lib/config'
 
 const TABS: { key: string; label: string; filter: (p: Product) => boolean }[] = [
   { key: 'all',    label: 'All products',          filter: () => true },

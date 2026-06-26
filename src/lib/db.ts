@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Product, ProductSummary, Supplier, Source } from './data'
+import type { Product, ProductSummary, Supplier, Source } from './config'
 import { groupRelationships, type ProductRelations, type RelRow } from './relationships'
 
 // DB columns differ from the app's field names in a few places; alias them in

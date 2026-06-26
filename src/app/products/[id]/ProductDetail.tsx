@@ -1,20 +1,16 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
 import {
-  PRODUCT_BRIEF, STAGES, STATUS_STYLE, CONF_STYLE,
+  STAGES, STATUS_STYLE, CONF_STYLE, SPEC_TEMPLATES,
   FACET_DEFS, DOMAINS, LIFECYCLE, fmtUSD,
   type Product, type ProductSummary, type Supplier, type Source,
-} from '@/lib/data'
+} from '@/lib/config'
 import type { ProductRelations } from '@/lib/relationships'
 import { pickHeroMetrics, hasValidBom } from '@/lib/productView'
 import { Linkify } from '@/lib/linkify'
 import GenerationStrip from './GenerationStrip'
 import SankeySection from './SankeySection'
-
-type Level = 'L1' | 'L2' | 'L3'
-type BriefEntry = { l1: string; analogy?: string; l2?: string; l3?: string; why?: string; keyTerms?: string[] }
 
 function StatusBadge({ status }: { status: string }) {
   const s = STATUS_STYLE[status] ?? { bg: '#f1f0ec', fg: '#6b7280' }
@@ -26,61 +22,13 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function ConfBadge({ conf }: { conf?: string }) {
+
   if (!conf) return null
   const c = CONF_STYLE[conf]
   if (!c) return null
   return <span className="text-xs font-medium" style={{ color: c.c }} title={`Confidence: ${c.l}`}>{c.l}</span>
 }
 
-function BriefContent({ brief, level, setLevel }: {
-  brief: BriefEntry
-  level: Level
-  setLevel: (l: Level) => void
-}) {
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-3 gap-2">
-        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#a8a294' }}>In plain terms</p>
-        <div className="flex items-center gap-1 rounded-lg border p-0.5" style={{ borderColor: '#d6d3cb', background: '#fbfaf8' }}>
-          {(['L1', 'L2', 'L3'] as Level[]).map(l => (
-            <button key={l} onClick={() => setLevel(l)}
-              className="px-2.5 py-0.5 rounded-md text-xs font-medium transition-colors"
-              style={{ background: level === l ? '#fff' : 'transparent', color: level === l ? '#0f172a' : '#8a8579', boxShadow: level === l ? '0 1px 3px rgba(0,0,0,0.06)' : 'none' }}>
-              {l}
-            </button>
-          ))}
-        </div>
-      </div>
-      <p className="text-sm mb-3" style={{ color: '#1c1a17', lineHeight: 1.75 }}>
-        <Linkify text={brief.l1} />
-      </p>
-      {brief.analogy && (
-        <p className="text-sm italic mb-3" style={{ color: '#8a8579' }}>
-          <Linkify text={brief.analogy} />
-        </p>
-      )}
-      {(level === 'L2' || level === 'L3') && brief.l2 && (
-        <p className="text-sm mt-3" style={{ color: '#3d3b37', lineHeight: 1.75, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
-          <Linkify text={brief.l2} />
-        </p>
-      )}
-      {level === 'L3' && brief.l3 && (
-        <p className="text-sm mt-3" style={{ color: '#3d3b37', lineHeight: 1.75, borderTop: '1px solid var(--border)', paddingTop: 12 }}>
-          <Linkify text={brief.l3} />
-        </p>
-      )}
-      {brief.why && (
-        <div className="mt-4 rounded-lg p-3 flex gap-2" style={{ background: '#fdf8f0', border: '1px solid #e8d5b5' }}>
-          <span style={{ lineHeight: 1 }}>⚑</span>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: '#9a6b3f' }}>Why it matters</p>
-            <p className="text-xs" style={{ color: '#3d3b37', lineHeight: 1.6 }}><Linkify text={brief.why} /></p>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function ProductDetail({ product, suppliers, summaries, relations, sources }: {
   product: Product
@@ -89,14 +37,22 @@ export default function ProductDetail({ product, suppliers, summaries, relations
   relations: ProductRelations
   sources: Record<string, Source>
 }) {
-  const [level, setLevel] = useState<Level>('L1')
-
-  const brief = PRODUCT_BRIEF[product.id]
   const domain = DOMAINS[product.domain as keyof typeof DOMAINS]
-  const hasSpecs = product.specs.length > 0
+  const notesSpec = product.specs.find(s => s.label === 'Notes')
 
   const heroMetrics = pickHeroMetrics(product.specs)
   const competitors = relations.competesWith
+
+  // Template-driven spec table
+  const specTemplate = SPEC_TEMPLATES[product.sub] ?? []
+  const specByLabel = Object.fromEntries(product.specs.map(s => [s.label, s]))
+  const templateRows = specTemplate.map(label => ({
+    label,
+    spec: specByLabel[label] ?? null,
+  }))
+  const specHalf = Math.ceil(templateRows.length / 2)
+  const leftRows = templateRows.slice(0, specHalf)
+  const rightRows = templateRows.slice(specHalf)
 
   // Suppliers grouped by stage
   const stageGroups = STAGES
@@ -106,11 +62,6 @@ export default function ProductDetail({ product, suppliers, summaries, relations
     }))
     .filter(g => g.sids.length > 0)
   const totalSuppliers = stageGroups.reduce((n, g) => n + g.sids.length, 0)
-
-  // Dense 2-column specs split
-  const specHalf = Math.ceil(product.specs.length / 2)
-  const leftSpecs = product.specs.slice(0, specHalf)
-  const rightSpecs = product.specs.slice(specHalf)
 
   return (
     <div style={{ background: 'var(--background)' }} className="min-h-screen">
@@ -131,35 +82,14 @@ export default function ProductDetail({ product, suppliers, summaries, relations
             <StatusBadge status={product.status} />
           </div>
           <h1 className="text-3xl font-bold" style={{ color: '#0f172a' }}>{product.name}</h1>
+          {notesSpec && (
+            <p className="text-sm mt-2" style={{ color: '#3d3b37', lineHeight: 1.7 }}>{notesSpec.value}</p>
+          )}
           <p className="text-base mt-1" style={{ color: '#8a8579' }}>{product.vendor} · {product.family ?? product.subcat}</p>
         </div>
 
         {/* Generation chain */}
         <GenerationStrip product={product} summaries={summaries} />
-
-        {/* Hero: image + description, or description alone */}
-        {product.image_url ? (
-          <div className="grid sm:grid-cols-2 gap-8 mb-8 items-start">
-            <div className="rounded-xl overflow-hidden" style={{ background: '#f1f0ec', aspectRatio: '4/3' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={product.image_url}
-                alt={product.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-            </div>
-            <div>
-              {brief
-                ? <BriefContent brief={brief} level={level} setLevel={setLevel} />
-                : <p className="text-sm" style={{ color: '#a8a294' }}>No description available yet.</p>
-              }
-            </div>
-          </div>
-        ) : brief ? (
-          <section className="rounded-xl p-6 mb-8" style={{ background: '#fff', border: '1px solid var(--border)' }}>
-            <BriefContent brief={brief} level={level} setLevel={setLevel} />
-          </section>
-        ) : null}
 
         {/* Hero metrics strip */}
         {heroMetrics.length > 0 && (
@@ -254,20 +184,20 @@ export default function ProductDetail({ product, suppliers, summaries, relations
           </section>
         )}
 
-        {/* Specs — dense 2-column */}
-        {hasSpecs && (
+        {/* Specs — template-driven 2-column, always shown if template exists */}
+        {templateRows.length > 0 && (
           <section className="mb-8">
             <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#a8a294' }}>Specifications</p>
             <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--border)' }}>
               <div className="grid sm:grid-cols-2" style={{ background: '#fff' }}>
                 <table className="w-full text-sm">
                   <tbody>
-                    {leftSpecs.map(s => (
-                      <tr key={s.label} style={{ borderBottom: '1px solid var(--border)', borderRight: '1px solid var(--border)' }}>
-                        <td className="py-2.5 px-4" style={{ color: '#8a8579', width: '45%' }}>{s.label}</td>
-                        <td className="py-2.5 px-4 text-right font-medium" style={{ color: '#0f172a' }}>
-                          {s.value}
-                          {s.conf && <span className="ml-1.5"><ConfBadge conf={s.conf} /></span>}
+                    {leftRows.map(({ label, spec }) => (
+                      <tr key={label} style={{ borderBottom: '1px solid var(--border)', borderRight: '1px solid var(--border)' }}>
+                        <td className="py-2.5 px-4" style={{ color: '#8a8579', width: '45%' }}>{label}</td>
+                        <td className="py-2.5 px-4 text-right font-medium" style={{ color: spec ? '#0f172a' : '#c4c0b8' }}>
+                          {spec ? spec.value : '—'}
+                          {spec?.conf && <span className="ml-1.5"><ConfBadge conf={spec.conf} /></span>}
                         </td>
                       </tr>
                     ))}
@@ -275,12 +205,12 @@ export default function ProductDetail({ product, suppliers, summaries, relations
                 </table>
                 <table className="w-full text-sm">
                   <tbody>
-                    {rightSpecs.map(s => (
-                      <tr key={s.label} style={{ borderBottom: '1px solid var(--border)' }}>
-                        <td className="py-2.5 px-4" style={{ color: '#8a8579', width: '45%' }}>{s.label}</td>
-                        <td className="py-2.5 px-4 text-right font-medium" style={{ color: '#0f172a' }}>
-                          {s.value}
-                          {s.conf && <span className="ml-1.5"><ConfBadge conf={s.conf} /></span>}
+                    {rightRows.map(({ label, spec }) => (
+                      <tr key={label} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <td className="py-2.5 px-4" style={{ color: '#8a8579', width: '45%' }}>{label}</td>
+                        <td className="py-2.5 px-4 text-right font-medium" style={{ color: spec ? '#0f172a' : '#c4c0b8' }}>
+                          {spec ? spec.value : '—'}
+                          {spec?.conf && <span className="ml-1.5"><ConfBadge conf={spec.conf} /></span>}
                         </td>
                       </tr>
                     ))}

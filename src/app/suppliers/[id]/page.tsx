@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { STAGES, MODEL_LABEL, MODEL_COLOR, STATUS_STYLE, LIFECYCLE } from '@/lib/data'
+import { STAGES, MODEL_LABEL, MODEL_COLOR, STATUS_STYLE, LIFECYCLE } from '@/lib/config'
 import { getProducts, getSuppliers } from '@/lib/db'
 
 function ModelBadge({ model }: { model: string }) {

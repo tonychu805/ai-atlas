@@ -1,7 +1,7 @@
 import Link from 'next/link'
-import type { Product, ProductSummary } from '@/lib/data'
+import type { Product, ProductSummary } from '@/lib/config'
 import { getFullChain } from '@/lib/generations'
-import { STATUS_STYLE } from '@/lib/data'
+import { STATUS_STYLE } from '@/lib/config'
 
 export default function GenerationStrip({ product, summaries }: {
   product: Product

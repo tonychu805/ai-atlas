@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { getProducts, getSuppliers } from '@/lib/db'
-import { STAGES, type Product } from '@/lib/data'
+import { STAGES, type Product } from '@/lib/config'
 
 export const metadata = { title: 'Supply Chain — AI Atlas' }
 

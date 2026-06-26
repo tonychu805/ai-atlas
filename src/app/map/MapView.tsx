@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { DOMAINS, DOMAIN_LIST, DomainKey } from '@/lib/data'
+import { DOMAINS, DOMAIN_LIST, DomainKey } from '@/lib/config'
 
 // ─── Sunburst math ─────────────────────────────────────────────────────────────
 

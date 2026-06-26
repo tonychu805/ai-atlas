@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { LEARN_STEPS, TERMS, VALUE_CHAIN } from '@/lib/data'
+import { LEARN_STEPS, TERMS, VALUE_CHAIN } from '@/lib/config'
 import { Linkify } from '@/lib/linkify'
 
 type Level = 'L1' | 'L2'

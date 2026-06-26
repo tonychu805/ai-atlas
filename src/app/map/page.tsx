@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 
-import { DOMAIN_LIST } from '@/lib/data'
+import { DOMAIN_LIST } from '@/lib/config'
 import { getProducts } from '@/lib/db'
 import MapView from './MapView'
 

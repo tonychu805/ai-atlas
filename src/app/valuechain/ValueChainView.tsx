@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { VALUE_CHAIN, MODEL_LABEL, MODEL_COLOR, type Supplier } from '@/lib/data'
+import { VALUE_CHAIN, MODEL_LABEL, MODEL_COLOR, type Supplier } from '@/lib/config'
 
 export default function ValueChainView({ suppliers }: { suppliers: Record<string, Supplier> }) {
   const [open, setOpen]     = useState<string | null>(VALUE_CHAIN[0].key)
