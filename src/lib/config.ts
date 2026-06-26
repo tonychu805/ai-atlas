@@ -387,6 +387,7 @@ export interface ValueChainStage {
   key: StageKey
   label: string
   desc: string
+  description: string
   subs: string[]
   groups: { title: string; ids: string[] }[]
 }
@@ -541,40 +542,33 @@ export const TERMS: Record<string, Term> = {
 
 export const VALUE_CHAIN: ValueChainStage[] = [
   { key: 'design_ip_eda', label: 'Design & IP', desc: 'EDA tools, IP cores, PDKs and design services',
+    description: 'Engineers describe the chip in hardware languages, then use EDA tools from Synopsys and Cadence to synthesize, place and route billions of transistors. Most chip companies are "fabless" — they license IP blocks (CPU cores, PCIe/HBM PHYs, SerDes) from vendors like Arm rather than designing everything from scratch. The finished layout file is handed to a foundry for manufacturing. A handful of EDA and IP firms sit at the start of every chip ever made.',
     subs: ['Synthesis & place-and-route','Verification / simulation / DFT','Physical sign-off','IP cores — CPU/GPU, PCIe/HBM PHYs, SerDes','Foundry PDKs & design services'],
     groups: [ { title: 'Key suppliers', ids: ['synopsys','cadence','arm','broadcom','alchip','marvell','siemens-eda'] } ] },
   { key: 'foundry_fab', label: 'Foundry — front-end fab', desc: 'Wafer fabrication: hundreds of layered steps, FEOL → MOL → BEOL',
+    description: 'Manufacturing begins with a polished disc of ultra-pure silicon — a wafer — sliced from a grown crystal. Hundreds of chips are fabricated across one wafer at once. Light then prints the circuit pattern onto it: leading-edge nodes use EUV (13.5nm light, sourced exclusively from ASML) to achieve features smaller than a virus. Each layer is deposited, patterned, etched, and cleaned in sequence across hundreds of steps, building up the transistors and metal wiring that form the chip. Front-end fabs cost tens of billions to build and run for years.',
     subs: ['Deposition — CVD / ALD / PVD / epitaxy','Photolithography — DUV / EUV / High-NA','Etch — dry / wet','Doping — implant / anneal','CMP / planarization','Clean / metrology / inspection'],
     groups: [ { title: 'Foundries', ids: ['tsmc','samsung','intel-foundry','smic','globalfoundries'] }, { title: 'Equipment', ids: ['asml','applied-materials','lam-research','tokyo-electron','kla'] }, { title: 'Materials', ids: ['shin-etsu','sumco','jsr','tokyo-ohka','hoya','entegris','soulbrain'] }, { title: 'Infrastructure & utilities', ids: ['air-liquide','linde','air-products','ovivo','kurita'] } ] },
   { key: 'materials', label: 'Materials', desc: 'Wafers, photoresist, gases, slurries, masks and substrates feeding the fab',
+    description: 'Every fab step consumes tightly controlled materials. Silicon wafers — the substrate for the entire process — must be polished mirror-flat with purity measured in parts per billion. Photoresist coats the wafer to capture the lithography pattern; specialty gases drive deposition and etch; ultra-pure water (a fab can use millions of litres per day) rinses between steps; CMP slurries planarize each layer. A disruption to any of these inputs — neon gas supply during the Ukraine conflict, for example — can ripple straight into chip output.',
     subs: ['Silicon wafers (Si / SOI / SiC / GaN)','Photoresist & ancillaries','Specialty / electronic gases','Ultra-pure water & process chemicals','CMP slurries & pads','Photomask blanks & masks','Package substrates (ABF)'],
     groups: [ { title: 'Wafers, resists & substrates', ids: ['shin-etsu','sumco','jsr','tokyo-ohka','hoya','ibiden','unimicron','shinko','kinsus'] }, { title: 'Specialty gases', ids: ['air-liquide','linde','air-products'] }, { title: 'Ultra-pure water & chemicals', ids: ['ovivo','kurita','entegris','soulbrain'] } ] },
   { key: 'equipment', label: 'Equipment (WFE)', desc: 'Wafer-fab and packaging equipment — a highly concentrated layer',
+    description: 'The fab is only as capable as its tools. Lithography scanners from ASML expose each layer; deposition tools grow thin films atom by atom; etch chambers carve precise features; CMP tools grind each surface flat; metrology and inspection systems catch defects before they compound. Leading-edge equipment is concentrated in a handful of suppliers — ASML holds a monopoly on EUV scanners, making it the single most critical chokepoint in advanced chip manufacturing.',
     subs: ['Lithography scanners (EUV / DUV)','Deposition tools','Etch tools','CMP','Ion implant','Metrology / inspection','ATE & handlers','Advanced-packaging / bonding'],
     groups: [ { title: 'Suppliers', ids: ['asml','applied-materials','lam-research','tokyo-electron','kla','advantest','teradyne','besi','asmpt'] } ] },
   { key: 'packaging_osat', label: 'Assembly & packaging', desc: 'Back-end assembly and advanced packaging — dominates AI-accelerator BOMs',
+    description: 'After the wafer is diced, dies move to packaging. AI accelerators demand advanced 2.5D packaging: the processor die and HBM memory stacks are placed side-by-side on a silicon interposer (CoWoS), letting them behave like one giant chip with enormous memory bandwidth. HBM itself stacks 8–12 DRAM dies connected by through-silicon vias. CoWoS capacity at TSMC is one of the tightest supply-chain bottlenecks in AI hardware — it has directly constrained shipments of GPUs like the H100 and B200.',
     subs: ['Wafer thinning / dicing','Interconnect — wire bond / flip-chip','Substrate — organic / ABF','2.5D — interposer / CoWoS / EMIB','3D — TSV / SoIC / hybrid bonding','Fan-out — InFO / FOWLP','Chiplets + UCIe / EMIB'],
     groups: [ { title: 'OSAT & foundry', ids: ['tsmc','ase','amkor','jcet','tongfu','hana-micron','pti'] }, { title: 'Substrate materials', ids: ['ibiden','unimicron','shinko','kinsus'] }, { title: 'Bonding tools', ids: ['besi','asmpt'] } ] },
   { key: 'test', label: 'Test', desc: 'Wafer sort, final test, burn-in and system-level test',
+    description: 'Chips are tested at two points. Wafer sort electrically probes every die before dicing — catching failures early so only known-good dies proceed to packaging. After packaging, final test and burn-in stress the finished module under real operating conditions to screen out early-life failures. System-level test validates the complete assembly. Catching defects early matters: a die that fails after CoWoS packaging wastes far more value than one caught at wafer sort.',
     subs: ['Wafer test / probe (sort)','Final test','Burn-in','System-level test (SLT)'],
     groups: [ { title: 'OSAT', ids: ['ase','amkor','jcet','pti','tesna','huatian'] }, { title: 'ATE', ids: ['advantest','teradyne'] } ] },
   { key: 'distribution', label: 'Distribution', desc: 'Distributors and direct channels to OEMs',
+    description: 'Finished chips reach customers through broad-line distributors like Arrow and Avnet, or via direct channels for hyperscalers and large OEMs. For AI accelerators, most volume ships directly to a handful of hyperscaler customers — Google, Microsoft, Meta, Amazon — largely bypassing traditional distribution. Allocation decisions at this stage can determine which companies get compute capacity and when.',
     subs: ['Global distributors','Direct / design-win channels'],
     groups: [ { title: 'Distributors', ids: ['arrow','avnet'] } ] },
-]
-
-// ─── Learn path ───────────────────────────────────────────────────────────────
-
-export const LEARN_STEPS = [
-  { n: 1,  title: 'Design the chip',     l1: 'Engineers describe the chip in code and arrange billions of transistors using EDA software and licensed IP blocks.', l2: 'Design houses — often "fabless" — use tools from Synopsys and Cadence and IP from Arm, then hand a finished layout to a foundry.', why: 'A handful of EDA and IP firms sit at the start of every chip.', node: { kind: 'stage', key: 'design_ip_eda' }, linkLabel: 'See the Design & EDA stage' },
-  { n: 2,  title: 'Start with a wafer',  l1: 'Manufacturing begins with a polished disc of ultra-pure silicon called a wafer.', l2: 'Wafers are sliced from a grown silicon crystal; hundreds of chips are built across one wafer at once.', why: 'A few suppliers dominate high-purity wafers worldwide.', node: { kind: 'term', id: 'wafer' }, linkLabel: 'Learn: silicon wafer' },
-  { n: 3,  title: 'Print the pattern',   l1: 'Light prints the circuit pattern onto the wafer — the finest features use EUV.', l2: 'Photolithography exposes light-sensitive resist through a mask; leading-edge layers need 13.5nm EUV light from ASML.', why: 'EUV is a single-supplier chokepoint at the heart of advanced chips.', node: { kind: 'term', id: 'euv' }, linkLabel: 'Learn: EUV lithography' },
-  { n: 4,  title: 'Build the layers',    l1: 'The chip is built up layer by layer through repeated depositing, patterning and etching.', l2: 'Hundreds of steps in the front-end fab stack and shape materials to form transistors and wiring.', why: 'Front-end fabs cost tens of billions and run for years.', node: { kind: 'stage', key: 'foundry_fab' }, linkLabel: 'See the Foundry stage' },
-  { n: 5,  title: 'Test the wafer',      l1: 'Each chip on the wafer is electrically tested before anything is cut or packaged.', l2: 'Wafer sort screens out defective dies early so only good ones move forward.', why: 'Catching failures here saves expensive packaging later.', node: { kind: 'stage', key: 'test' }, linkLabel: 'See the Test stage' },
-  { n: 6,  title: 'Stack the memory',    l1: 'Memory chips are stacked into HBM so the processor never runs short of data.', l2: 'HBM stacks 8–12 DRAM dies connected by through-silicon vias for enormous bandwidth.', why: 'HBM is now one of the costliest, most supply-constrained parts.', node: { kind: 'term', id: 'hbm' }, linkLabel: 'Learn: HBM' },
-  { n: 7,  title: 'Package it together', l1: 'The processor and its HBM are mounted side by side on one silicon base — CoWoS.', l2: 'Advanced 2.5D packaging places dies on an interposer so they behave like one giant chip.', why: 'CoWoS capacity is the tightest bottleneck in AI-chip supply.', node: { kind: 'term', id: 'cowos' }, linkLabel: 'Learn: CoWoS packaging' },
-  { n: 8,  title: 'Final test',          l1: 'The finished package is tested again — and sometimes burned-in — before it ships.', l2: 'Final and system-level test verify the assembled module under real operating conditions.', why: "It's the last gate before a costly part reaches a customer.", node: { kind: 'stage', key: 'test' }, linkLabel: 'See the Test stage' },
-  { n: 9,  title: 'Into the rack',       l1: 'Verified accelerators like the B200 are assembled into servers and racks for data centers.', l2: 'Many accelerators plus CPUs, networking and memory combine into the systems that train AI models.', why: 'This is where all the upstream supply chains finally converge.', node: { kind: 'product', id: 'nvidia-b200' }, linkLabel: 'See the NVIDIA B200' },
 ]
 
 // ─── Spec templates ───────────────────────────────────────────────────────────

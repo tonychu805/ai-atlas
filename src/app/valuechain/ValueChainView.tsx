@@ -5,12 +5,7 @@ import Link from 'next/link'
 import { VALUE_CHAIN, MODEL_LABEL, MODEL_COLOR, type Supplier } from '@/lib/config'
 
 export default function ValueChainView({ suppliers }: { suppliers: Record<string, Supplier> }) {
-  const [open, setOpen]     = useState<string | null>(VALUE_CHAIN[0].key)
-  const [stageFilter, setStageFilter] = useState<string>('')
-
-  const visibleStages = stageFilter
-    ? VALUE_CHAIN.filter(s => s.key === stageFilter)
-    : VALUE_CHAIN
+  const [open, setOpen] = useState<string | null>(VALUE_CHAIN[0].key)
 
   return (
     <div style={{ background: 'var(--background)' }} className="min-h-screen">
@@ -18,48 +13,15 @@ export default function ValueChainView({ suppliers }: { suppliers: Record<string
 
         {/* Header */}
         <div className="mb-7">
-          <h1 className="text-2xl font-bold mb-1" style={{ color: '#0f172a' }}>The value chain</h1>
+          <h1 className="text-2xl font-bold mb-1" style={{ color: '#0f172a' }}>Learn</h1>
           <p className="text-sm" style={{ color: '#8a8579' }}>
             Seven stages from design tools to customer delivery. Click a stage to expand.
           </p>
         </div>
 
-        {/* Stage filter pills */}
-        <div className="flex flex-wrap gap-2 mb-7">
-          <button
-            onClick={() => setStageFilter('')}
-            className="px-3 py-1.5 rounded-full text-sm border transition-colors"
-            style={{
-              borderColor: stageFilter ? '#d6d3cb' : '#0f172a',
-              background: stageFilter ? '#fff' : '#0f172a',
-              color: stageFilter ? '#6b6557' : '#fff',
-            }}
-          >
-            All stages
-          </button>
-          {VALUE_CHAIN.map(stage => (
-            <button
-              key={stage.key}
-              onClick={() => {
-                const next = stageFilter === stage.key ? '' : stage.key
-                setStageFilter(next)
-                if (next) setOpen(next)
-              }}
-              className="px-3 py-1.5 rounded-full text-sm border transition-colors"
-              style={{
-                borderColor: stageFilter === stage.key ? '#0f172a' : '#d6d3cb',
-                background: stageFilter === stage.key ? '#0f172a' : '#fff',
-                color: stageFilter === stage.key ? '#fff' : '#6b6557',
-              }}
-            >
-              {stage.label}
-            </button>
-          ))}
-        </div>
-
         {/* Accordion */}
         <div className="flex flex-col gap-2">
-          {visibleStages.map(stage => {
+          {VALUE_CHAIN.map(stage => {
             const isOpen = open === stage.key
             const supplierCount = stage.groups.reduce((n, g) => n + g.ids.length, 0)
             const idx = VALUE_CHAIN.findIndex(s => s.key === stage.key)
@@ -92,8 +54,15 @@ export default function ValueChainView({ suppliers }: { suppliers: Record<string
                 {/* Accordion body */}
                 {isOpen && (
                   <div className="px-5 pb-5 border-t" style={{ borderColor: 'var(--border)' }}>
-                    {/* Sub-activities as tag pills */}
+
+                    {/* Description */}
                     <div className="mt-4 mb-5">
+                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: '#a8a294' }}>Description</p>
+                      <p className="text-sm" style={{ color: '#3d3b37', lineHeight: 1.7 }}>{stage.description}</p>
+                    </div>
+
+                    {/* Sub-activities */}
+                    <div className="mb-5">
                       <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: '#a8a294' }}>Activities</p>
                       <div className="flex flex-wrap gap-1.5">
                         {stage.subs.map(s => (

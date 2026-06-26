@@ -57,7 +57,7 @@ export default function Home() {
           </p>
           <div className="flex gap-3 flex-wrap">
             <Link
-              href="/learn"
+              href="/valuechain"
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-medium transition-opacity hover:opacity-90"
               style={{ background: '#0f172a', color: '#fff' }}
             >
@@ -73,7 +73,7 @@ export default function Home() {
           </div>
           <p className="mt-5 text-sm" style={{ color: '#8a8579' }}>
             New here?{' '}
-            <Link href="/learn" style={{ color: '#8a8579', textDecoration: 'underline', textDecorationStyle: 'dotted' as const }}>
+            <Link href="/valuechain" style={{ color: '#8a8579', textDecoration: 'underline', textDecorationStyle: 'dotted' as const }}>
               See how a chip is made, stage by stage →
             </Link>
           </p>
