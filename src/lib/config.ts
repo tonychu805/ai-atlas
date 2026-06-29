@@ -328,8 +328,15 @@ export interface Product {
   specs: { label: string; value: string; conf?: string }[]
   bom: { uncertainty: string; items: BomItem[]; total: number; totalConf: string } | null
   supply: Partial<Record<StageKey, string[]>>
-  rels: { type: string; target: string; qty?: number }[]
   sources: string[]
+  foundry?: string | null
+  packaging_technology?: string | null
+  export_controlled?: boolean | null
+  entity_list?: boolean | null
+  supply_risk_score?: number | null
+  export_control_notes?: string | null
+  generation?: string | null
+  codename?: string | null
 }
 
 export interface ProductSummary {
@@ -342,6 +349,8 @@ export interface ProductSummary {
   status: string
   node?: string
   rels: { type: string; target: string; qty?: number }[]
+  generation?: string | null
+  codename?: string | null
 }
 
 export interface Supplier {
@@ -350,6 +359,7 @@ export interface Supplier {
   hq: string
   models: string[]
   stages: StageKey[]
+  description?: string | null
 }
 
 export interface Source {

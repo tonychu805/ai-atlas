@@ -13,12 +13,10 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import Link from 'next/link'
-import type { Product } from '@/lib/config'
+import type { ProductRelations, RelItem } from '@/lib/relationships'
 
 const REL_STYLE: Record<string, { label: string; color: string; dash?: string; arrow: boolean }> = {
   competes_with: { label: 'competes with', color: '#dc2626', arrow: false },
-  fabbed_by:     { label: 'fabbed by',     color: '#9a6b3f', arrow: true },
-  packaged_by:   { label: 'packaged by',   color: '#3f7d7a', arrow: true },
   succeeds:      { label: 'succeeds',      color: '#8a8579', dash: '6 3', arrow: true },
   uses:          { label: 'uses',          color: '#4f7a9a', arrow: true },
 }
@@ -82,15 +80,24 @@ function truncate(s: string, n: number) {
   return s.length > n ? s.slice(0, n - 1) + '…' : s
 }
 
-export default function RelationshipGraph({ product, productNames }: {
-  product: Product
-  productNames: Record<string, string>
+type FlatRel = { type: string; target: string; name: string; qty?: number }
+
+function flatten(items: RelItem[], type: string): FlatRel[] {
+  return items.map(r => ({ type, target: r.id, name: r.name, qty: r.qty }))
+}
+
+export default function RelationshipGraph({ productName, relations }: {
+  productName: string
+  relations: ProductRelations
 }) {
-  const rels = product.rels ?? []
+  const rels: FlatRel[] = [
+    ...flatten(relations.uses,          'uses'),
+    ...flatten(relations.competesWith,  'competes_with'),
+    ...flatten(relations.succeeds,      'succeeds'),
+  ]
   if (rels.length === 0) return null
 
   const n = rels.length
-  // Radius ensures adjacent circles (r≈40 with padding) don't overlap
   const R = Math.max(160, Math.ceil((n * 90) / (2 * Math.PI)))
 
   const { nodes, edges } = useMemo<{ nodes: Node[]; edges: Edge[] }>(() => {
@@ -99,7 +106,7 @@ export default function RelationshipGraph({ product, productNames }: {
         id: 'center',
         type: 'center',
         position: { x: -55, y: -20 },
-        data: { label: truncate(product.name, 18) } satisfies CenterData,
+        data: { label: truncate(productName, 18) } satisfies CenterData,
       },
       ...rels.map((r, i) => {
         const angle = ((2 * Math.PI) / n) * i - Math.PI / 2
@@ -113,7 +120,7 @@ export default function RelationshipGraph({ product, productNames }: {
           },
           data: {
             productId: r.target,
-            label: truncate(productNames[r.target] ?? r.target, 18),
+            label: truncate(r.name, 18),
             relType: r.type,
             qty: r.qty,
             color: s.color,
@@ -141,7 +148,7 @@ export default function RelationshipGraph({ product, productNames }: {
     })
 
     return { nodes, edges }
-  }, [product.name, product.id, rels, productNames, n, R])
+  }, [productName, rels, n, R])
 
   const presentTypes = [...new Set(rels.map(r => r.type))].filter(t => REL_STYLE[t])
 

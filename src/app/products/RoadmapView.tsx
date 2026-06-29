@@ -1,11 +1,20 @@
 import Link from 'next/link'
-import { DOMAINS, STATUS_STYLE, LIFECYCLE, type ProductSummary } from '@/lib/config'
-import { orderGeneration } from '@/lib/generations'
+import { STATUS_STYLE, LIFECYCLE, type ProductSummary } from '@/lib/config'
+import { orderGenerationChains, type ChainEntry } from '@/lib/generations'
 
-// sub key -> human label, flattened from every domain's sub list.
-const SUB_LABEL: Record<string, string> = Object.fromEntries(
-  Object.values(DOMAINS).flatMap(d => d.subs.map(s => [s.key, s.label] as const)),
-)
+const SUBCAT_LABEL: Record<string, string> = {
+  gpu:        'GPU',
+  asic:       'AI ASIC',
+  fpga:       'FPGA',
+  superchip:  'Superchip',
+  cpu:        'CPU',
+  hbm:        'HBM',
+  dram:       'DRAM',
+  dpu:        'DPU / SmartNIC',
+  switch:     'Switch',
+  system:     'System Platform',
+  soc:        'SoC',
+}
 
 function Pill({ p }: { p: ProductSummary }) {
   const s = STATUS_STYLE[p.status] ?? { bg: '#f1f0ec', fg: '#6b7280' }
@@ -13,7 +22,7 @@ function Pill({ p }: { p: ProductSummary }) {
   return (
     <Link
       href={`/products/${p.id}`}
-      className="flex-shrink-0 inline-flex flex-col gap-1.5 px-4 py-3 rounded-lg border transition-shadow hover:shadow-sm"
+      className="flex-shrink-0 inline-flex flex-col gap-1 px-4 py-3 rounded-lg border transition-shadow hover:shadow-sm"
       style={{
         borderColor: '#d6d3cb', background: s.bg, textDecoration: 'none',
         opacity: eol ? 0.55 : 1,
@@ -21,23 +30,47 @@ function Pill({ p }: { p: ProductSummary }) {
       title={LIFECYCLE[p.status] ?? p.status}
     >
       <span className="text-sm font-medium whitespace-nowrap" style={{ color: s.fg }}>{p.name}</span>
+      {p.codename && <span className="text-xs whitespace-nowrap" style={{ color: s.fg, opacity: 0.7 }}>{p.codename}</span>}
       {p.node && <span className="text-xs font-mono" style={{ color: '#8a8579' }}>{p.node}</span>}
     </Link>
   )
 }
 
-function Row({ label, items }: { label: string; items: ProductSummary[] }) {
+function ChainRow({ items, prevItems }: { items: ProductSummary[]; prevItems?: ProductSummary[] }) {
+  return (
+    <div className="flex items-center gap-2 overflow-x-auto ax-scroll pb-1">
+      {items.map((p, i) => {
+        const linkedToPrev = i > 0 && p.rels?.some(r => r.type === 'succeeds' && r.target === items[i - 1].id)
+        return (
+          <div key={p.id} className="flex items-center gap-2 flex-shrink-0">
+            {i > 0 && (linkedToPrev
+              ? <span style={{ color: '#cbc7bd' }}>→</span>
+              : <span style={{ color: '#e2dfd8' }}>·</span>
+            )}
+            <Pill p={p} />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function SubcatRows({ label, entries }: { label: string; entries: ChainEntry[] }) {
   return (
     <div className="mb-6">
       {label && <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: '#a8a294' }}>{label}</p>}
-      <div className="flex items-center gap-2 overflow-x-auto ax-scroll pb-1">
-        {items.map((p, i) => (
-          <div key={p.id} className="flex items-center gap-2 flex-shrink-0">
-            {i > 0 && <span style={{ color: '#cbc7bd' }}>→</span>}
-            <Pill p={p} />
-          </div>
-        ))}
-      </div>
+      {entries.map(({ chain, branchFromId }, i) => (
+        <div key={i} className={i > 0 ? 'mt-2' : ''}>
+          {branchFromId ? (
+            <div className="flex items-center gap-2">
+              <span className="flex-shrink-0 text-sm select-none" style={{ color: '#cbc7bd' }}>└→</span>
+              <ChainRow items={chain} />
+            </div>
+          ) : (
+            <ChainRow items={chain} />
+          )}
+        </div>
+      ))}
     </div>
   )
 }
@@ -67,28 +100,32 @@ export default function RoadmapView({ products }: { products: ProductSummary[] }
             return (
               <section key={vendor} className="mb-8 pt-8 border-t first:border-t-0 first:pt-0" style={{ borderColor: 'var(--border)' }}>
                 <h2 className="text-lg font-semibold mb-3" style={{ color: '#0f172a' }}>{vendor}</h2>
-                <Row label="" items={orderGeneration(list)} />
+                <SubcatRows label="" entries={orderGenerationChains(list)} />
               </section>
             )
           }
 
-          // Otherwise group by sub.
-          const bySub = new Map<string, ProductSummary[]>()
+          // Otherwise group by subcat for fine-grained rows.
+          const bySubcat = new Map<string, ProductSummary[]>()
           for (const p of list) {
-            const key = p.sub || 'Other' // sub can be null/empty in the data
-            const sub = bySub.get(key)
-            if (sub) sub.push(p)
-            else bySub.set(key, [p])
+            const key = p.subcat || 'other'
+            const bucket = bySubcat.get(key)
+            if (bucket) bucket.push(p)
+            else bySubcat.set(key, [p])
           }
-          const subs = [...bySub.keys()].sort((a, b) =>
-            (SUB_LABEL[a] ?? a).localeCompare(SUB_LABEL[b] ?? b))
+          const subcats = [...bySubcat.keys()].sort((a, b) =>
+            (SUBCAT_LABEL[a] ?? a).localeCompare(SUBCAT_LABEL[b] ?? b))
 
           return (
             <section key={vendor} className="mb-8 pt-8 border-t first:border-t-0 first:pt-0" style={{ borderColor: 'var(--border)' }}>
               <h2 className="text-lg font-semibold mb-3" style={{ color: '#0f172a' }}>{vendor}</h2>
-              {subs.map(sub => (
-                <Row key={sub} label={SUB_LABEL[sub] ?? sub} items={orderGeneration(bySub.get(sub)!)} />
-              ))}
+              {subcats.flatMap(subcat => {
+                const chains = orderGenerationChains(bySubcat.get(subcat)!)
+                const label = SUBCAT_LABEL[subcat] ?? subcat.toUpperCase()
+                return chains.map((chain, ci) => (
+                  <Row key={`${subcat}-${ci}`} label={ci === 0 ? label : ''} items={chain} />
+                ))
+              })}
             </section>
           )
         })}

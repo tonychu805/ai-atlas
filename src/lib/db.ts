@@ -9,13 +9,16 @@ const PRODUCT_SELECT = [
   'id', 'name', 'vendor', 'domain', 'sub',
   'subcat:subcategory', 'family', 'status', 'node:process_node', 'avail:available',
   'verified:last_verified', 'attrs', 'specs', 'bom', 'supply:supply_chain',
-  'rels', 'sources:source_ids',
+  'sources:source_ids',
+  'foundry', 'packaging_technology',
+  'export_controlled', 'entity_list', 'supply_risk_score', 'export_control_notes',
+  'generation', 'codename',
 ].join(',')
 
-const SUPPLIER_SELECT = 'id,name,hq,models,stages'
+const SUPPLIER_SELECT = 'id,name,hq,models,stages,description'
 
 // Subset of PRODUCT_SELECT for the roadmap view + detail-page generation strip.
-const PRODUCT_SUMMARY_SELECT = 'id,name,vendor,sub,subcat:subcategory,family,status,node:process_node,rels'
+const PRODUCT_SUMMARY_SELECT = 'id,name,vendor,sub,subcat:subcategory,family,status,node:process_node,generation,codename'
 
 // The specs column is an array for populated products but defaults to an empty
 // object ({}) for ~9 stub products. The Product type promises an array, so
@@ -48,9 +51,24 @@ export async function getProductNames(): Promise<Record<string, string>> {
 }
 
 export async function getProductSummaries(): Promise<ProductSummary[]> {
-  const { data, error } = await supabase.from('products').select(PRODUCT_SUMMARY_SELECT)
-  if (error) throw new Error(`getProductSummaries: ${error.message}`)
-  return (data ?? []) as unknown as ProductSummary[]
+  const [{ data: products, error: prodErr }, { data: succRels, error: relsErr }] = await Promise.all([
+    supabase.from('products').select(PRODUCT_SUMMARY_SELECT),
+    supabase.from('product_relationships').select('from_product_id,to_product_id').eq('type', 'succeeds'),
+  ])
+  if (prodErr) throw new Error(`getProductSummaries: ${prodErr.message}`)
+  if (relsErr) throw new Error(`getProductSummaries(rels): ${relsErr.message}`)
+
+  // from_product_id = newer, to_product_id = older; build predecessorId map
+  const predecessorOf = new Map<string, string>()
+  for (const r of (succRels ?? []) as { from_product_id: string; to_product_id: string }[]) {
+    predecessorOf.set(r.from_product_id, r.to_product_id)
+  }
+
+  return ((products ?? []) as unknown as ProductSummary[]).map(s => {
+    const predId = predecessorOf.get(s.id)
+    const rels = predId ? [{ type: 'succeeds' as const, target: predId }] : []
+    return { ...s, rels }
+  })
 }
 
 export async function getSuppliers(): Promise<Record<string, Supplier>> {

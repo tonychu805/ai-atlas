@@ -59,6 +59,93 @@ export function getFullChain(
   return chain
 }
 
+export type ChainEntry = {
+  chain: ProductSummary[]
+  // ID of the product in a previous chain that this one branches from.
+  // Undefined means an independent chain (no shared ancestor in this group).
+  branchFromId?: string
+}
+
+// Order a vendor+subcat group into separate linear chains.
+// At branch points (one predecessor, multiple successors) the deepest branch
+// continues the current chain; shorter branches start new chains tagged with
+// branchFromId so the roadmap can render a visual fork.
+export function orderGenerationChains(group: ProductSummary[]): ChainEntry[] {
+  const ids = new Set(group.map(p => p.id))
+
+  const succsByPred = new Map<string, string[]>()
+  for (const p of group) {
+    const pred = predecessorId(p)
+    if (pred && ids.has(pred)) {
+      const arr = succsByPred.get(pred) ?? []
+      arr.push(p.id)
+      succsByPred.set(pred, arr)
+    }
+  }
+
+  const byId = new Map(group.map(p => [p.id, p]))
+
+  const participates = (p: ProductSummary) => {
+    const pred = predecessorId(p)
+    return (!!pred && ids.has(pred)) || succsByPred.has(p.id)
+  }
+
+  const roots = group
+    .filter(participates)
+    .filter(p => { const pred = predecessorId(p); return !(pred && ids.has(pred)) })
+    .sort((a, b) => a.name.localeCompare(b.name))
+
+  const depthCache = new Map<string, number>()
+  function depth(id: string): number {
+    if (depthCache.has(id)) return depthCache.get(id)!
+    const succs = succsByPred.get(id) ?? []
+    const d = succs.length === 0 ? 0 : 1 + Math.max(...succs.map(depth))
+    depthCache.set(id, d)
+    return d
+  }
+
+  const chains: ChainEntry[] = []
+  const globalSeen = new Set<string>()
+  // Queue entries: { id to start chain from, optional branch-from product id }
+  const queue: { id: string; branchFromId?: string }[] = roots.map(r => ({ id: r.id }))
+
+  while (queue.length > 0) {
+    const { id: startId, branchFromId } = queue.shift()!
+    if (globalSeen.has(startId)) continue
+
+    const chain: ProductSummary[] = []
+    let cur: string | undefined = startId
+
+    while (cur && !globalSeen.has(cur)) {
+      const p = byId.get(cur)
+      if (!p) break
+      globalSeen.add(cur)
+      chain.push(p)
+
+      const succs = (succsByPred.get(cur) ?? [])
+        .sort((a, b) => depth(b) - depth(a) || a.localeCompare(b))
+      if (succs.length === 0) {
+        cur = undefined
+      } else {
+        // Secondary branches tagged with the product that caused the fork
+        for (const s of succs.slice(1)) {
+          if (!globalSeen.has(s)) queue.push({ id: s, branchFromId: cur })
+        }
+        cur = succs[0]
+      }
+    }
+
+    if (chain.length > 0) chains.push({ chain, branchFromId })
+  }
+
+  const rest = group
+    .filter(p => !globalSeen.has(p.id))
+    .sort((a, b) => a.name.localeCompare(b.name))
+  if (rest.length > 0) chains.push({ chain: rest })
+
+  return chains
+}
+
 // Order one vendor+sub group: succession chains (root → leaf) first, then
 // products that take part in no chain, alphabetically by name.
 export function orderGeneration(group: ProductSummary[]): ProductSummary[] {

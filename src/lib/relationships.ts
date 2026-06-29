@@ -11,6 +11,7 @@ export type ProductRelations = {
   uses: RelItem[]
   usedBy: RelItem[]
   competesWith: RelItem[]
+  succeeds: RelItem[]
 }
 
 function item(id: string, names: Record<string, string>, qty: number | null): RelItem {
@@ -29,16 +30,20 @@ export function groupRelationships(
   const uses: RelItem[] = []
   const usedBy: RelItem[] = []
   const competesWith: RelItem[] = []
+  const succeeds: RelItem[] = []
 
   for (const r of rows) {
     if (r.type === 'uses' && r.from_product_id === productId) {
       uses.push(item(r.to_product_id, names, r.qty))
     } else if (r.type === 'uses' && r.to_product_id === productId) {
       usedBy.push(item(r.from_product_id, names, r.qty))
-    } else if (r.type === 'competes_with' && r.from_product_id === productId) {
-      competesWith.push(item(r.to_product_id, names, null))
+    } else if (r.type === 'competes_with') {
+      if (r.from_product_id === productId) competesWith.push(item(r.to_product_id, names, null))
+      else if (r.to_product_id === productId) competesWith.push(item(r.from_product_id, names, null))
+    } else if (r.type === 'succeeds' && r.from_product_id === productId) {
+      succeeds.push(item(r.to_product_id, names, null))
     }
   }
 
-  return { uses, usedBy, competesWith }
+  return { uses, usedBy, competesWith, succeeds }
 }

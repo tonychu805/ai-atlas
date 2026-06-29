@@ -11,6 +11,8 @@ import type { ProductRelations } from '@/lib/relationships'
 import { pickHeroMetrics, hasValidBom } from '@/lib/productView'
 import { Linkify } from '@/lib/linkify'
 import GenerationStrip from './GenerationStrip'
+import CompositionSection from './CompositionSection'
+import RelationshipGraph from './RelationshipGraph'
 import SankeySection from './SankeySection'
 
 function StatusBadge({ status }: { status: string }) {
@@ -29,6 +31,7 @@ function ConfBadge({ conf }: { conf?: string }) {
   if (!c) return null
   return <span className="text-xs font-medium" style={{ color: c.c }} title={`Confidence: ${c.l}`}>{c.l}</span>
 }
+
 
 
 export default function ProductDetail({ product, suppliers, summaries, relations, sources }: {
@@ -83,10 +86,12 @@ export default function ProductDetail({ product, suppliers, summaries, relations
             <StatusBadge status={product.status} />
           </div>
           <h1 className="text-3xl font-bold" style={{ color: '#0f172a' }}>{product.name}</h1>
+          {product.codename && (
+            <p className="text-sm mt-1 font-medium" style={{ color: '#a8a294' }}>Codename: {product.codename}</p>
+          )}
           {notesSpec && (
             <p className="text-sm mt-2" style={{ color: '#3d3b37', lineHeight: 1.7 }}>{notesSpec.value}</p>
           )}
-          <p className="text-base mt-1" style={{ color: '#8a8579' }}>{product.vendor} · {product.family ?? product.subcat}</p>
         </div>
 
         {/* Generation chain */}
@@ -131,40 +136,36 @@ export default function ProductDetail({ product, suppliers, summaries, relations
             <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: '#a8a294' }}>
               Suppliers ({totalSuppliers})
             </p>
-            <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--border)' }}>
-              <table className="w-full text-sm">
-                <tbody>
-                  {stageGroups.map(({ stage, sids }) => (
-                    <React.Fragment key={`stage-${stage.key}`}>
-                      <tr style={{ background: '#f8f7f4', borderTop: '1px solid var(--border)' }}>
-                        <td
-                          colSpan={1}
-                          className="px-4 py-1.5 text-xs font-semibold uppercase tracking-wider"
-                          style={{ color: '#a8a294' }}
-                        >
-                          {stage.label}
-                        </td>
-                      </tr>
-                      {sids.map(sid => (
-                        <tr key={sid} style={{ borderTop: '1px solid var(--border)', background: '#fff' }}>
-                          <td className="py-2.5 px-4">
-                            <Link
-                              href={`/suppliers/${sid}`}
-                              style={{ color: '#0f172a', textDecoration: 'none', fontWeight: 500 }}
-                              className="hover:underline"
-                            >
-                              {suppliers[sid]?.name ?? sid}
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </React.Fragment>
-                  ))}
-                </tbody>
-              </table>
+            <div className="flex flex-col gap-2">
+              {stageGroups.map(({ stage, sids }) => (
+                <div key={stage.key} className="flex items-start gap-3">
+                  <span
+                    className="text-xs font-semibold uppercase tracking-wider flex-shrink-0 pt-1"
+                    style={{ color: '#a8a294', width: '110px' }}
+                  >
+                    {stage.label}
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {sids.map(sid => (
+                      <Link
+                        key={sid}
+                        href={`/suppliers/${sid}`}
+                        title={suppliers[sid]?.description ?? undefined}
+                        className="text-xs px-2.5 py-1 rounded-full border transition-shadow hover:shadow-sm"
+                        style={{ borderColor: '#d6d3cb', background: '#fbfaf8', color: '#3d3b37', textDecoration: 'none' }}
+                      >
+                        {suppliers[sid]?.name ?? sid}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </section>
         )}
+
+        {/* Key components (uses rels from product_relationships) */}
+        <CompositionSection sub={product.sub} relations={relations} />
 
         {/* Attributes */}
         {product.attrs && FACET_DEFS.some(f => f.get(product)) && (
@@ -256,6 +257,9 @@ export default function ProductDetail({ product, suppliers, summaries, relations
             </div>
           </section>
         )}
+
+        {/* Relationship graph */}
+        <RelationshipGraph productName={product.name} relations={relations} />
 
         {/* Supply flow Sankey */}
         <SankeySection name={product.name} relations={relations} />

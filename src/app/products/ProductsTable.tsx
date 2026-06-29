@@ -1,35 +1,24 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { FACET_DEFS, STATUS_STYLE, LIFECYCLE, type Product } from '@/lib/config'
-
-const TABS: { key: string; label: string; filter: (p: Product) => boolean }[] = [
-  { key: 'all',    label: 'All products',          filter: () => true },
-  { key: 'gpu',    label: 'AI Accelerators & GPUs', filter: p => p.sub === 'ai_accelerator' && p.subcat === 'ai_accelerator_gpu' },
-  { key: 'cpu',    label: 'CPUs',                   filter: p => p.sub === 'cpu' },
-  { key: 'asic',   label: 'AI ASICs',               filter: p => p.sub === 'ai_accelerator' && p.subcat === 'ai_accelerator_asic' },
-  { key: 'memory', label: 'Memory Architectures',   filter: p => p.domain === 'memory' },
-]
 
 const FILTER_GROUPS: { label: string; facets: string[] }[] = [
   { label: 'Business',      facets: ['status', 'company_type', 'vendor'] },
-  { label: 'Functional',    facets: ['integration_level', 'end_market'] },
+  { label: 'Functional',    facets: ['product_category', 'integration_level', 'end_market'] },
   { label: 'Manufacturing', facets: ['node_maturity', 'transistor_arch', 'packaging', 'material_system'] },
 ]
 
 type FacetDef = { key: string; label: string; map: Record<string, string>; get: (p: Product) => string | undefined }
 
+
 export default function ProductsTable({ products }: { products: Product[] }) {
-  const searchParams = useSearchParams()
-  const initialTab = TABS.find(t => t.key === searchParams.get('tab'))?.key ?? 'all'
-  const [tab, setTab]         = useState(initialTab)
   const [search, setSearch]   = useState('')
   const [filters, setFilters] = useState<Record<string, string>>({})
+  const [sortCol, setSortCol] = useState<'name' | 'vendor' | 'generation' | 'subcat' | 'status' | 'avail' | null>(null)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
-  const tabDef = TABS.find(t => t.key === tab) ?? TABS[0]
-
-  // Company filter is data-driven: options are the distinct vendors present.
+  // Company and product_category filters are data-driven.
   const allDefs = useMemo<FacetDef[]>(() => {
     const vendors = Array.from(new Set(products.map(p => p.vendor))).sort((a, b) => a.localeCompare(b))
     const vendorDef: FacetDef = {
@@ -38,11 +27,18 @@ export default function ProductsTable({ products }: { products: Product[] }) {
       map: Object.fromEntries(vendors.map(v => [v, v])),
       get: p => p.vendor,
     }
-    return [...FACET_DEFS, vendorDef]
+    const subcats = Array.from(new Set(products.map(p => p.subcat))).sort()
+    const productCategoryDef: FacetDef = {
+      key: 'product_category',
+      label: 'Product Category',
+      map: Object.fromEntries(subcats.map(v => [v, v.toUpperCase()])),
+      get: p => p.subcat,
+    }
+    return [...FACET_DEFS, vendorDef, productCategoryDef]
   }, [products])
 
   const filtered = useMemo(() => {
-    let list = products.filter(tabDef.filter)
+    let list = products
     if (search) {
       const q = search.toLowerCase()
       list = list.filter(p =>
@@ -58,11 +54,31 @@ export default function ProductsTable({ products }: { products: Product[] }) {
       list = list.filter(p => def.get(p) === val)
     }
     return list
-  }, [products, search, filters, tabDef, allDefs])
+  }, [products, search, filters, allDefs])
+
+  function shortName(name: string, vendor: string) {
+    return name.startsWith(vendor + ' ') ? name.slice(vendor.length + 1) : name
+  }
 
   function setFilter(key: string, val: string) {
     setFilters(prev => ({ ...prev, [key]: prev[key] === val ? '' : val }))
   }
+
+  function toggleSort(col: typeof sortCol) {
+    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortCol(col); setSortDir('asc') }
+  }
+
+  const sorted = useMemo(() => {
+    if (!sortCol) return filtered
+    return [...filtered].sort((a, b) => {
+      const av = ((sortCol === 'generation' ? a.generation : a[sortCol as keyof typeof a]) ?? '').toString().toLowerCase()
+      const bv = ((sortCol === 'generation' ? b.generation : b[sortCol as keyof typeof b]) ?? '').toString().toLowerCase()
+      const primary = sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
+      if (primary !== 0 || sortCol === 'name') return primary
+      return a.name.localeCompare(b.name)
+    })
+  }, [filtered, sortCol, sortDir])
 
   return (
     <div style={{ background: 'var(--background)' }} className="min-h-screen">
@@ -72,37 +88,6 @@ export default function ProductsTable({ products }: { products: Product[] }) {
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-1" style={{ color: '#0f172a' }}>Products</h1>
           <p className="text-sm" style={{ color: '#8a8579' }}>{filtered.length} product{filtered.length !== 1 ? 's' : ''}</p>
-        </div>
-
-        {/* Category tabs */}
-        <div className="flex gap-2 flex-wrap mb-5">
-          {TABS.map(t => {
-            const count = products.filter(t.filter).length
-            const active = tab === t.key
-            return (
-              <button
-                key={t.key}
-                onClick={() => { setTab(t.key); setFilters({}) }}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-colors"
-                style={{
-                  borderColor: active ? '#0f172a' : '#d6d3cb',
-                  background: active ? '#0f172a' : '#fff',
-                  color: active ? '#fff' : '#3d3b37',
-                }}
-              >
-                {t.label}
-                <span
-                  className="text-xs px-1.5 py-0.5 rounded"
-                  style={{
-                    background: active ? 'rgba(255,255,255,0.2)' : '#f1f0ec',
-                    color: active ? '#fff' : '#8a8579',
-                  }}
-                >
-                  {count}
-                </span>
-              </button>
-            )
-          })}
         </div>
 
         {/* Search */}
@@ -174,15 +159,34 @@ export default function ProductsTable({ products }: { products: Product[] }) {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left" style={{ borderColor: '#e5e2db', background: '#f8f7f4' }}>
-                  <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: '#a8a294' }}>Product</th>
-                  <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: '#a8a294' }}>Category</th>
-                  <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wider" style={{ color: '#a8a294' }}>Status</th>
+                  {([
+                    { col: 'name',       label: 'Product'    },
+                    { col: 'vendor',     label: 'Company'    },
+                    { col: 'generation', label: 'Generation' },
+                    { col: 'subcat',     label: 'Category'   },
+                    { col: 'avail',      label: 'Year'       },
+                    { col: 'status',     label: 'Status'     },
+                  ] as { col: typeof sortCol; label: string }[]).map(({ col, label }) => (
+                    <th
+                      key={col}
+                      className="px-5 py-3 text-xs font-semibold uppercase tracking-wider cursor-pointer select-none"
+                      style={{ color: sortCol === col ? '#0f172a' : '#a8a294' }}
+                      onClick={() => toggleSort(col)}
+                    >
+                      <span className="flex items-center gap-1">
+                        {label}
+                        <span className="text-xs" style={{ color: sortCol === col ? '#0f172a' : '#d6d3cb' }}>
+                          {sortCol === col ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}
+                        </span>
+                      </span>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((p, i) => {
+                {sorted.map((p, i) => {
                   const st = STATUS_STYLE[p.status] ?? { bg: '#f1f0ec', fg: '#6b7280' }
-                  const catLabel = p.subcat.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+                  const catLabel = p.subcat.replace(/_/g, ' ').toUpperCase()
                   return (
                     <tr
                       key={p.id}
@@ -194,14 +198,15 @@ export default function ProductsTable({ products }: { products: Product[] }) {
                         <div className="flex items-center gap-2.5">
                           <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: st.fg }} />
                           <div>
-                            <div className="font-medium" style={{ color: '#0f172a' }}>{p.name}</div>
-                            <div className="text-xs mt-0.5" style={{ color: '#8a8579' }}>
-                              {p.vendor}{p.family ? ` · ${p.family}` : ''}
-                            </div>
+                            <div className="font-medium" style={{ color: '#0f172a' }}>{shortName(p.name, p.vendor)}</div>
+                            {p.codename && <div className="text-xs" style={{ color: '#a8a294' }}>{p.codename}</div>}
                           </div>
                         </div>
                       </td>
+                      <td className="px-5 py-3.5 text-sm" style={{ color: '#6b6557' }}>{p.vendor}</td>
+                      <td className="px-5 py-3.5 text-sm" style={{ color: p.generation ? '#6b6557' : '#c4c0b8' }}>{p.generation ?? '—'}</td>
                       <td className="px-5 py-3.5 text-sm" style={{ color: '#6b6557' }}>{catLabel}</td>
+                      <td className="px-5 py-3.5 text-sm" style={{ color: '#6b6557' }}>{p.avail ?? '—'}</td>
                       <td className="px-5 py-3.5">
                         <span
                           className="text-xs px-2 py-0.5 rounded-full font-medium"
