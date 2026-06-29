@@ -36,7 +36,7 @@ function Pill({ p }: { p: ProductSummary }) {
   )
 }
 
-function ChainRow({ items, prevItems }: { items: ProductSummary[]; prevItems?: ProductSummary[] }) {
+function ChainRow({ items }: { items: ProductSummary[] }) {
   return (
     <div className="flex items-center gap-2 overflow-x-auto ax-scroll pb-1">
       {items.map((p, i) => {
@@ -119,13 +119,13 @@ export default function RoadmapView({ products }: { products: ProductSummary[] }
           return (
             <section key={vendor} className="mb-8 pt-8 border-t first:border-t-0 first:pt-0" style={{ borderColor: 'var(--border)' }}>
               <h2 className="text-lg font-semibold mb-3" style={{ color: '#0f172a' }}>{vendor}</h2>
-              {subcats.flatMap(subcat => {
-                const chains = orderGenerationChains(bySubcat.get(subcat)!)
-                const label = SUBCAT_LABEL[subcat] ?? subcat.toUpperCase()
-                return chains.map((chain, ci) => (
-                  <Row key={`${subcat}-${ci}`} label={ci === 0 ? label : ''} items={chain} />
-                ))
-              })}
+              {subcats.map(subcat => (
+                <SubcatRows
+                  key={subcat}
+                  label={SUBCAT_LABEL[subcat] ?? subcat.toUpperCase()}
+                  entries={orderGenerationChains(bySubcat.get(subcat)!)}
+                />
+              ))}
             </section>
           )
         })}
