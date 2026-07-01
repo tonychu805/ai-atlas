@@ -104,12 +104,16 @@ function buildGraph(entries: ChainEntry[]): { nodes: Node[]; edges: Edge[]; heig
     // Place the independent chain horizontally at currentY.
     chain.forEach((p, i) => {
       nodes.push({ id: p.id, type: 'product', position: { x: i * (NODE_W + H_GAP), y: currentY }, data: { p } })
-      if (i > 0) edges.push({
-        id: `e-${chain[i - 1].id}-${p.id}`,
-        source: chain[i - 1].id, target: p.id,
-        sourceHandle: 'right', targetHandle: 'left',
-        type: 'default', style: EDGE_STYLE, markerEnd: ARROW,
-      })
+      if (i > 0) {
+        const prev = chain[i - 1]
+        const linked = p.rels?.some(r => r.type === 'succeeds' && r.target === prev.id)
+        if (linked) edges.push({
+          id: `e-${prev.id}-${p.id}`,
+          source: prev.id, target: p.id,
+          sourceHandle: 'right', targetHandle: 'left',
+          type: 'default', style: EDGE_STYLE, markerEnd: ARROW,
+        })
+      }
     })
 
     // Greedy row assignment for this chain's branches.

@@ -1,6 +1,7 @@
 'use client'
 
-import { STATUS_STYLE, type ProductSummary } from '@/lib/config'
+import { useState, useMemo } from 'react'
+import { type ProductSummary } from '@/lib/config'
 import { orderGenerationChains } from '@/lib/generations'
 import { RoadmapGraph } from './RoadmapGraph'
 
@@ -19,7 +20,7 @@ const SUBCAT_LABEL: Record<string, string> = {
 }
 
 function SubcatRows({ label, products }: { label: string; products: ProductSummary[] }) {
-  const entries = orderGenerationChains(products)
+  const entries = useMemo(() => orderGenerationChains(products), [products])
   return (
     <div className="mb-4">
       {label && (
@@ -32,52 +33,135 @@ function SubcatRows({ label, products }: { label: string; products: ProductSumma
   )
 }
 
+
 export default function RoadmapView({ products }: { products: ProductSummary[] }) {
-  const byVendor = new Map<string, ProductSummary[]>()
-  for (const p of products) {
-    const list = byVendor.get(p.vendor)
-    if (list) list.push(p)
-    else byVendor.set(p.vendor, [p])
-  }
-  const vendors = [...byVendor.keys()].sort((a, b) => a.localeCompare(b))
+  const [vendorFilter, setVendorFilter] = useState<string | null>(null)
+  const [subcatFilter, setSubcatFilter] = useState<string | null>(null)
+
+  const { vendors, allSubcats } = useMemo(() => {
+    const vendorSet = new Set<string>()
+    const subcatSet = new Set<string>()
+    for (const p of products) {
+      vendorSet.add(p.vendor)
+      if (p.subcat) subcatSet.add(p.subcat)
+    }
+    const vendors = [...vendorSet].sort((a, b) => a.localeCompare(b))
+    const allSubcats = [...subcatSet].sort((a, b) =>
+      (SUBCAT_LABEL[a] ?? a).localeCompare(SUBCAT_LABEL[b] ?? b))
+    return { vendors, allSubcats }
+  }, [products])
+
+  const filteredVendors = useMemo(() => {
+    return vendors.filter(v => !vendorFilter || v === vendorFilter)
+  }, [vendors, vendorFilter])
+
+  const byVendor = useMemo(() => {
+    const map = new Map<string, ProductSummary[]>()
+    for (const p of products) {
+      if (vendorFilter && p.vendor !== vendorFilter) continue
+      if (subcatFilter && p.subcat !== subcatFilter) continue
+      const list = map.get(p.vendor) ?? []
+      list.push(p)
+      map.set(p.vendor, list)
+    }
+    return map
+  }, [products, vendorFilter, subcatFilter])
+
+  // Only show subcat pills that exist in the current vendor filter scope
+  const visibleSubcats = useMemo(() => {
+    const scope = vendorFilter
+      ? products.filter(p => p.vendor === vendorFilter)
+      : products
+    const subcatSet = new Set(scope.map(p => p.subcat).filter(Boolean))
+    return allSubcats.filter(s => subcatSet.has(s))
+  }, [products, vendorFilter, allSubcats])
 
   return (
     <div style={{ background: 'var(--background)' }} className="min-h-screen">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-1" style={{ color: '#0f172a' }}>Product roadmap</h1>
           <p className="text-sm" style={{ color: '#8a8579' }}>{products.length} products by company and generation</p>
         </div>
 
-        {vendors.map(vendor => {
-          const list = byVendor.get(vendor)!
+        {/* Filters */}
+        <div className="flex flex-col gap-3 mb-6">
+          <div className="flex items-start gap-4">
+            <span
+              className="text-xs font-semibold uppercase tracking-wider shrink-0 pt-2"
+              style={{ color: '#a8a294', width: '7rem' }}
+            >
+              Filter
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {/* Company */}
+              <div className="relative">
+                <select
+                  value={vendorFilter ?? ''}
+                  onChange={e => { setVendorFilter(e.target.value || null); setSubcatFilter(null) }}
+                  className="text-sm px-3 py-1.5 pr-7 rounded-lg border appearance-none cursor-pointer outline-none"
+                  style={{
+                    borderColor: vendorFilter ? '#0f172a' : '#d6d3cb',
+                    background: vendorFilter ? '#f0ede8' : '#fff',
+                    color: vendorFilter ? '#0f172a' : '#3d3b37',
+                  }}
+                >
+                  <option value="">Company: All</option>
+                  {vendors.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: '#8a8579' }}>▾</span>
+              </div>
 
-          if (list.length <= 2) {
-            return (
-              <section key={vendor} className="mb-8 pt-8 border-t first:border-t-0 first:pt-0" style={{ borderColor: 'var(--border)' }}>
-                <h2 className="text-lg font-semibold mb-3" style={{ color: '#0f172a' }}>{vendor}</h2>
-                <SubcatRows label="" products={list} />
-              </section>
-            )
-          }
+              {/* Type */}
+              <div className="relative">
+                <select
+                  value={subcatFilter ?? ''}
+                  onChange={e => setSubcatFilter(e.target.value || null)}
+                  className="text-sm px-3 py-1.5 pr-7 rounded-lg border appearance-none cursor-pointer outline-none"
+                  style={{
+                    borderColor: subcatFilter ? '#0f172a' : '#d6d3cb',
+                    background: subcatFilter ? '#f0ede8' : '#fff',
+                    color: subcatFilter ? '#0f172a' : '#3d3b37',
+                  }}
+                >
+                  <option value="">Type: All</option>
+                  {visibleSubcats.map(s => (
+                    <option key={s} value={s}>{SUBCAT_LABEL[s] ?? s.toUpperCase()}</option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: '#8a8579' }}>▾</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        {filteredVendors.map(vendor => {
+          const list = byVendor.get(vendor)
+          if (!list || list.length === 0) return null
 
           const bySubcat = new Map<string, ProductSummary[]>()
           for (const p of list) {
             const key = p.subcat || 'other'
-            const bucket = bySubcat.get(key)
-            if (bucket) bucket.push(p)
-            else bySubcat.set(key, [p])
+            const bucket = bySubcat.get(key) ?? []
+            bucket.push(p)
+            bySubcat.set(key, bucket)
           }
           const subcats = [...bySubcat.keys()].sort((a, b) =>
             (SUBCAT_LABEL[a] ?? a).localeCompare(SUBCAT_LABEL[b] ?? b))
 
           return (
-            <section key={vendor} className="mb-8 pt-8 border-t first:border-t-0 first:pt-0" style={{ borderColor: 'var(--border)' }}>
+            <section
+              key={vendor}
+              className="mb-8 pt-8 border-t first:border-t-0 first:pt-0"
+              style={{ borderColor: 'var(--border)' }}
+            >
               <h2 className="text-lg font-semibold mb-3" style={{ color: '#0f172a' }}>{vendor}</h2>
               {subcats.map(subcat => (
                 <SubcatRows
                   key={subcat}
-                  label={SUBCAT_LABEL[subcat] ?? subcat.toUpperCase()}
+                  label={subcats.length > 1 ? (SUBCAT_LABEL[subcat] ?? subcat.toUpperCase()) : ''}
                   products={bySubcat.get(subcat)!}
                 />
               ))}
