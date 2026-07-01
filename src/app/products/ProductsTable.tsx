@@ -167,11 +167,11 @@ export default function ProductsTable({ products, processNodes, foundries, packa
                   {defs.map(def => {
                     const active = filters[def.key]
                     return (
-                      <div key={def.key} className="relative">
+                      <div key={def.key} className="relative w-40">
                         <select
                           value={active ?? ''}
                           onChange={e => setFilter(def.key, e.target.value)}
-                          className="text-sm px-3 py-1.5 pr-7 rounded-lg border appearance-none cursor-pointer outline-none"
+                          className="w-full text-sm px-3 py-1.5 pr-7 rounded-lg border appearance-none cursor-pointer outline-none"
                           style={{
                             borderColor: active ? '#0f172a' : '#d6d3cb',
                             background: active ? '#f0ede8' : '#fff',
@@ -256,8 +256,8 @@ export default function ProductsTable({ products, processNodes, foundries, packa
                       <td className="px-5 py-3.5 text-sm" style={{ color: '#6b6557' }}>{p.avail ?? '—'}</td>
                       <td className="px-5 py-3.5">
                         <span
-                          className="text-xs px-2 py-0.5 rounded-full font-medium"
-                          style={{ background: st.bg, color: st.fg }}
+                          className="text-xs px-2 py-0.5 rounded-full font-medium inline-block text-center"
+                          style={{ background: st.bg, color: st.fg, minWidth: '6rem' }}
                         >
                           {LIFECYCLE[p.status] ?? p.status}
                         </span>

@@ -1,6 +1,7 @@
 'use client'
 
-import { STATUS_STYLE, type ProductSummary } from '@/lib/config'
+import { useState, useMemo } from 'react'
+import { type ProductSummary } from '@/lib/config'
 import { orderGenerationChains } from '@/lib/generations'
 import { RoadmapGraph } from './RoadmapGraph'
 
@@ -33,13 +34,43 @@ function SubcatRows({ label, products }: { label: string; products: ProductSumma
 }
 
 export default function RoadmapView({ products }: { products: ProductSummary[] }) {
-  const byVendor = new Map<string, ProductSummary[]>()
-  for (const p of products) {
-    const list = byVendor.get(p.vendor)
-    if (list) list.push(p)
-    else byVendor.set(p.vendor, [p])
-  }
-  const vendors = [...byVendor.keys()].sort((a, b) => a.localeCompare(b))
+  const [vendorFilter, setVendorFilter] = useState<string | null>(null)
+  const [subcatFilter, setSubcatFilter] = useState<string | null>(null)
+
+  const { vendors, allSubcats } = useMemo(() => {
+    const vendorSet = new Set<string>()
+    const subcatSet = new Set<string>()
+    for (const p of products) {
+      vendorSet.add(p.vendor)
+      if (p.subcat) subcatSet.add(p.subcat)
+    }
+    return {
+      vendors: [...vendorSet].sort((a, b) => a.localeCompare(b)),
+      allSubcats: [...subcatSet].sort((a, b) =>
+        (SUBCAT_LABEL[a] ?? a).localeCompare(SUBCAT_LABEL[b] ?? b)),
+    }
+  }, [products])
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(p =>
+      (!vendorFilter || p.vendor === vendorFilter) &&
+      (!subcatFilter || p.subcat === subcatFilter)
+    )
+  }, [products, vendorFilter, subcatFilter])
+
+  const byVendor = useMemo(() => {
+    const map = new Map<string, ProductSummary[]>()
+    for (const p of filteredProducts) {
+      const list = map.get(p.vendor) ?? []
+      list.push(p)
+      map.set(p.vendor, list)
+    }
+    return map
+  }, [filteredProducts])
+
+  const filteredVendors = useMemo(() =>
+    vendors.filter(v => !vendorFilter || v === vendorFilter),
+    [vendors, vendorFilter])
 
   return (
     <div style={{ background: 'var(--background)' }} className="min-h-screen">
@@ -49,8 +80,48 @@ export default function RoadmapView({ products }: { products: ProductSummary[] }
           <p className="text-sm" style={{ color: '#8a8579' }}>{products.length} products by company and generation</p>
         </div>
 
-        {vendors.map(vendor => {
-          const list = byVendor.get(vendor)!
+        {/* Filters */}
+        <div className="flex items-center gap-2 mb-6">
+          <div className="relative w-40">
+            <select
+              value={vendorFilter ?? ''}
+              onChange={e => { setVendorFilter(e.target.value || null); setSubcatFilter(null) }}
+              className="w-full text-sm px-3 py-1.5 pr-7 rounded-lg border appearance-none cursor-pointer outline-none"
+              style={{
+                borderColor: vendorFilter ? '#0f172a' : '#d6d3cb',
+                background: vendorFilter ? '#f0ede8' : '#fff',
+                color: vendorFilter ? '#0f172a' : '#3d3b37',
+              }}
+            >
+              <option value="">Company: All</option>
+              {vendors.map(v => <option key={v} value={v}>{v}</option>)}
+            </select>
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: '#8a8579' }}>▾</span>
+          </div>
+
+          <div className="relative w-40">
+            <select
+              value={subcatFilter ?? ''}
+              onChange={e => setSubcatFilter(e.target.value || null)}
+              className="w-full text-sm px-3 py-1.5 pr-7 rounded-lg border appearance-none cursor-pointer outline-none"
+              style={{
+                borderColor: subcatFilter ? '#0f172a' : '#d6d3cb',
+                background: subcatFilter ? '#f0ede8' : '#fff',
+                color: subcatFilter ? '#0f172a' : '#3d3b37',
+              }}
+            >
+              <option value="">Type: All</option>
+              {allSubcats.map(s => (
+                <option key={s} value={s}>{SUBCAT_LABEL[s] ?? s.toUpperCase()}</option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs" style={{ color: '#8a8579' }}>▾</span>
+          </div>
+        </div>
+
+        {filteredVendors.map(vendor => {
+          const list = byVendor.get(vendor)
+          if (!list || list.length === 0) return null
 
           if (list.length <= 2) {
             return (
@@ -64,9 +135,9 @@ export default function RoadmapView({ products }: { products: ProductSummary[] }
           const bySubcat = new Map<string, ProductSummary[]>()
           for (const p of list) {
             const key = p.subcat || 'other'
-            const bucket = bySubcat.get(key)
-            if (bucket) bucket.push(p)
-            else bySubcat.set(key, [p])
+            const bucket = bySubcat.get(key) ?? []
+            bucket.push(p)
+            bySubcat.set(key, bucket)
           }
           const subcats = [...bySubcat.keys()].sort((a, b) =>
             (SUBCAT_LABEL[a] ?? a).localeCompare(SUBCAT_LABEL[b] ?? b))
@@ -77,7 +148,7 @@ export default function RoadmapView({ products }: { products: ProductSummary[] }
               {subcats.map(subcat => (
                 <SubcatRows
                   key={subcat}
-                  label={SUBCAT_LABEL[subcat] ?? subcat.toUpperCase()}
+                  label={subcats.length > 1 ? (SUBCAT_LABEL[subcat] ?? subcat.toUpperCase()) : ''}
                   products={bySubcat.get(subcat)!}
                 />
               ))}
