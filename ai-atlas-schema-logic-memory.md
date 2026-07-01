@@ -230,6 +230,22 @@ The HBM double-role is the canonical example: `skhynix-hbm3e-8hi` is a browsable
 
 ---
 
+## 10a. Packaging methodology convention
+
+Packaging is recorded via two orthogonal fields — don't conflate them:
+- `packaging_technology` (product column): the *what* — a specific process name (`cowos-l`, `cowos-s`, `cowos-s-soic`, `copos`, `emib`, `emib-foveros`, `foveros`, `info-lsi`, `fcbga`, `bga`, `fowlp`, `foplp`, `wafer-scale`, `fusion-architecture`, `sip`, `photonic-interposer`, etc.). Free text, not a DB-enforced enum — use the most *specific* known process name rather than a generic category (e.g. Apple UltraFusion is `info-lsi`, not the generic `sip`, once the specific TSMC process is confirmed).
+- `supply_chain.packaging_osat` / `product_suppliers` (`packaging_osat` stage): the *who* — which OSAT/foundry actually performs the assembly. The same technology can be executed by different partners (e.g. CoWoS-L is TSMC IP, but ASE/Amkor may also appear as assembly partners on a given product).
+
+Naming discipline: use hyphens, not underscores (`cowos-s-soic`, not `cowos-s_soic`). Don't collapse genuinely distinct processes into one label — `emib` (2D bridge only), `emib-foveros` (2D bridge + 3D stacking), and `foveros` (3D stacking only) are three different Intel packaging generations and must stay separate, as must `fcbga` (standard flip-chip, most logic dies) vs plain `bga` (used for memory ICs like GDDR/LPDDR, which aren't flip-chip) vs `fowlp`/`foplp` (wafer-level vs panel-level fan-out — different processes, not a typo of each other).
+
+## 10b. Node maturity convention
+
+Don't store a subjective "leading_edge / advanced / mature" label — it goes stale the moment a newer node ships, and requires manual recalibration forever. Instead, node identity and HVM (high-volume manufacturing) intro year live in a normalized reference table, `process_nodes` (id, foundry, name, intro_year, notes) — one row per real node, sourced from foundry disclosures, regardless of how many products use it. `products.process_node_id` references it. "Maturity" or "node age" is a derived value computed at query/display time as `(current year - process_nodes.intro_year)`, never stored on `products` directly — don't reintroduce the duplication by copying `intro_year` back onto every product row.
+
+This also sidesteps the "nm" naming trap — node names aren't comparable across foundries (Samsung "7nm" ≠ TSMC N7 ≠ Intel 7), but HVM year is a real, comparable timestamp. `products.process_node` (free text) is kept as-is for display/citation purposes since it isn't yet normalized itself (many overlapping string variants for the same real node); `process_node_id` is the clean reference for anything that needs to compute or compare node age.
+
+The old `attrs.node_maturity` field (leading_edge/advanced/mature) predates this and has been removed — it conflated "cutting edge when the chip launched" with "cutting edge as of today," which produced real inconsistencies (e.g. 2020-era TSMC N7 chips and 2025-era TSMC A16 chips were both labeled `leading_edge`). An earlier version of this fix denormalized `intro_year` directly onto `products` as `node_intro_year`; that column was dropped in favor of the `process_nodes` table once the duplication became obvious — the migration also caught two real bugs from the flat-column version (a substring-matching false positive on "14nm" matching "%4nm%", and a copy-paste year error on N2P), which the join-based reference table doesn't reproduce.
+
 ## 11. Open decisions for next pass
 1. Store as flat JSON files per product (git-friendly, easy diffs) vs. a graph DB (better for relationship queries at scale). Recommend JSON-in-git to start.
 2. How to version products across generations (B100 → B200 → B300): separate records linked by `succeeds`, which keeps history browsable.

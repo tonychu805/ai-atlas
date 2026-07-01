@@ -12,7 +12,8 @@ const PRODUCT_SELECT = [
   'sources:source_ids',
   'foundry', 'packaging_technology',
   'export_controlled', 'entity_list', 'supply_risk_score', 'export_control_notes',
-  'generation', 'codename',
+  'generation', 'codename', 'process_node_id',
+  'vendor_supplier:suppliers!vendor_id(models)',
 ].join(',')
 
 const SUPPLIER_SELECT = 'id,name,hq,models,stages,description'
@@ -90,6 +91,27 @@ export async function getProductRelationships(id: string): Promise<ProductRelati
   if (error) throw new Error(`getProductRelationships(${id}): ${error.message}`)
   const names = await getProductNames()
   return groupRelationships((data ?? []) as RelRow[], id, names)
+}
+
+export async function getProcessNodes(): Promise<Record<string, string>> {
+  const { data, error } = await supabase.from('process_nodes').select('id,name')
+  if (error) throw new Error(`getProcessNodes: ${error.message}`)
+  return Object.fromEntries(((data ?? []) as { id: string; name: string }[]).map(n => [n.id, n.name]))
+}
+
+export type PackagingTech = { id: string; name: string; family: string; family_label: string }
+
+export async function getPackagingTechnologies(): Promise<PackagingTech[]> {
+  const { data, error } = await supabase.from('packaging_technologies').select('id,name,family,family_label')
+  if (error) throw new Error(`getPackagingTechnologies: ${error.message}`)
+  return (data ?? []) as PackagingTech[]
+}
+
+export async function getFoundries(): Promise<Record<string, string>> {
+  const { data, error } = await supabase
+    .from('suppliers').select('id,name').contains('models', ['foundry'])
+  if (error) throw new Error(`getFoundries: ${error.message}`)
+  return Object.fromEntries(((data ?? []) as { id: string; name: string }[]).map(s => [s.id, s.name]))
 }
 
 // id → Source map from the sources table (real titles + URLs + retrieved dates).

@@ -12,8 +12,6 @@ import { pickHeroMetrics, hasValidBom } from '@/lib/productView'
 import { Linkify } from '@/lib/linkify'
 import GenerationStrip from './GenerationStrip'
 import CompositionSection from './CompositionSection'
-import RelationshipGraph from './RelationshipGraph'
-import SankeySection from './SankeySection'
 
 function StatusBadge({ status }: { status: string }) {
   const s = STATUS_STYLE[status] ?? { bg: '#f1f0ec', fg: '#6b7280' }
@@ -257,12 +255,6 @@ export default function ProductDetail({ product, suppliers, summaries, relations
             </div>
           </section>
         )}
-
-        {/* Relationship graph */}
-        <RelationshipGraph productName={product.name} relations={relations} />
-
-        {/* Supply flow Sankey */}
-        <SankeySection name={product.name} relations={relations} />
 
         {/* Sources & provenance */}
         {product.sources?.some(sid => sources[sid]) && (

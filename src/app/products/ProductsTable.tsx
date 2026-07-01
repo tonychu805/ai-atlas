@@ -1,24 +1,24 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { FACET_DEFS, STATUS_STYLE, LIFECYCLE, type Product } from '@/lib/config'
+import { FACET_DEFS, STATUS_STYLE, LIFECYCLE, ARCH, MARKET, type Product } from '@/lib/config'
+import type { PackagingTech } from '@/lib/db'
 
 const FILTER_GROUPS: { label: string; facets: string[] }[] = [
-  { label: 'Business',      facets: ['status', 'company_type', 'vendor'] },
-  { label: 'Functional',    facets: ['product_category', 'integration_level', 'end_market'] },
-  { label: 'Manufacturing', facets: ['node_maturity', 'transistor_arch', 'packaging', 'material_system'] },
+  { label: 'Business',      facets: ['status', 'vendor'] },
+  { label: 'Functional',    facets: ['domain', 'product_category', 'end_market'] },
+  { label: 'Manufacturing', facets: ['company_type', 'foundry', 'process_node', 'transistor_arch', 'packaging'] },
 ]
 
-type FacetDef = { key: string; label: string; map: Record<string, string>; get: (p: Product) => string | undefined }
+type FacetDef = { key: string; label: string; map: Record<string, string>; get: (p: Product) => string | undefined; getAll?: (p: Product) => string[] }
 
 
-export default function ProductsTable({ products }: { products: Product[] }) {
+export default function ProductsTable({ products, processNodes, foundries, packagingTechs }: { products: Product[]; processNodes: Record<string, string>; foundries: Record<string, string>; packagingTechs: PackagingTech[] }) {
   const [search, setSearch]   = useState('')
   const [filters, setFilters] = useState<Record<string, string>>({})
   const [sortCol, setSortCol] = useState<'name' | 'vendor' | 'generation' | 'subcat' | 'status' | 'avail' | null>(null)
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
-  // Company and product_category filters are data-driven.
   const allDefs = useMemo<FacetDef[]>(() => {
     const vendors = Array.from(new Set(products.map(p => p.vendor))).sort((a, b) => a.localeCompare(b))
     const vendorDef: FacetDef = {
@@ -34,8 +34,55 @@ export default function ProductsTable({ products }: { products: Product[] }) {
       map: Object.fromEntries(subcats.map(v => [v, v.toUpperCase()])),
       get: p => p.subcat,
     }
-    return [...FACET_DEFS, vendorDef, productCategoryDef]
-  }, [products])
+    const usedNodeIds = Array.from(new Set(products.map(p => p.process_node_id).filter(Boolean) as string[]))
+      .sort((a, b) => (processNodes[a] ?? a).localeCompare(processNodes[b] ?? b))
+    const processNodeDef: FacetDef = {
+      key: 'process_node',
+      label: 'Process node',
+      map: Object.fromEntries(usedNodeIds.map(id => [id, processNodes[id] ?? id])),
+      get: p => p.process_node_id ?? undefined,
+    }
+
+    const usedArchs = Array.from(new Set(products.map(p => p.attrs?.transistor_arch).filter(Boolean) as string[])).sort()
+    const transistorArchDef: FacetDef = {
+      key: 'transistor_arch',
+      label: 'Transistor arch',
+      map: Object.fromEntries(usedArchs.map(v => [v, ARCH[v] ?? v])),
+      get: p => p.attrs?.transistor_arch,
+    }
+
+    const packById = Object.fromEntries(packagingTechs.map(t => [t.id, t]))
+    const usedPackIds = Array.from(new Set(
+      products.map(p => p.packaging_technology).filter(Boolean) as string[]
+    )).sort((a, b) => (packById[a]?.name ?? a).localeCompare(packById[b]?.name ?? b))
+    const packagingDef: FacetDef = {
+      key: 'packaging',
+      label: 'Packaging',
+      map: Object.fromEntries(usedPackIds.map(id => [id, packById[id]?.name ?? id])),
+      get: p => p.packaging_technology ?? undefined,
+    }
+
+    const usedMarkets = Array.from(new Set(products.map(p => p.attrs?.end_market).filter(Boolean) as string[])).sort()
+    const endMarketDef: FacetDef = {
+      key: 'end_market',
+      label: 'End market',
+      map: Object.fromEntries(usedMarkets.map(v => [v, MARKET[v] ?? v])),
+      get: p => p.attrs?.end_market,
+    }
+
+    const usedFoundryIds = Array.from(new Set(
+      products.flatMap(p => p.supply['foundry_fab'] ?? [])
+    )).sort((a, b) => (foundries[a] ?? a).localeCompare(foundries[b] ?? b))
+    const foundryDef: FacetDef = {
+      key: 'foundry',
+      label: 'Foundry',
+      map: Object.fromEntries(usedFoundryIds.map(id => [id, foundries[id] ?? id])),
+      get: p => (p.supply['foundry_fab'] ?? [])[0],
+      getAll: p => p.supply['foundry_fab'] ?? [],
+    }
+
+    return [...FACET_DEFS, vendorDef, productCategoryDef, processNodeDef, transistorArchDef, packagingDef, endMarketDef, foundryDef]
+  }, [products, processNodes, foundries, packagingTechs])
 
   const filtered = useMemo(() => {
     let list = products
@@ -51,7 +98,7 @@ export default function ProductsTable({ products }: { products: Product[] }) {
       if (!val) continue
       const def = allDefs.find(f => f.key === facetKey)
       if (!def) continue
-      list = list.filter(p => def.get(p) === val)
+      list = list.filter(p => def.getAll ? def.getAll(p).includes(val) : def.get(p) === val)
     }
     return list
   }, [products, search, filters, allDefs])
